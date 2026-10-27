@@ -1,5 +1,5 @@
 import btechLogo from '../assets/logo.png';
-import iitiLogo from '../assets/iitiLogo.png';
+import logo from "../assets/iitilogo.png";
 import headerBg from '../assets/Header.jpg';
 import '../Stylesheets/Header.css';
 
@@ -17,7 +17,7 @@ function Header() {
           AND INNOVATION - STUDENT PORTAL
         </p>
 
-        <img className="iitiimg" src={iitiLogo} alt="IITI Logo" />
+        <img className="iitiimg" src={logo} alt="IITI Logo" />
       </div>
     </div>
   );
