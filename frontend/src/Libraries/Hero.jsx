@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import studentsBg from "../assets/IMG_1350.jpg";
+import studentsBg from "../assets/IMG_1350.JPG"; // Fixed case to .JPG
 import iitiLogo from "../assets/iitilogo.png";
 import "../Stylesheets/Hero.css";
 
 import Modal from "./Modal";
 import Login from "./Login";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
+
 function Hero() {
   const [activeModal, setActiveModal] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [studentName, setStudentName] = useState(""); // Stores name for greeting
+  const [studentName, setStudentName] = useState("");
 
   const isLoggedIn = !!localStorage.getItem("token");
 
@@ -26,7 +28,7 @@ function Hero() {
     if (isLoggedIn) {
       const fetchName = async () => {
         try {
-          const res = await fetch("http://127.0.0.1:8000/api/student/profile", {
+          const res = await fetch(`${API_BASE_URL}/student/profile`, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
           });
           const data = await res.json();
@@ -59,7 +61,6 @@ function Hero() {
 
             <div className="heroTexts">
               <div className="heroTextsInner">
-                {/* IMPROVED: Dynamic greeting implementation */}
                 <h1>{getGreeting()}</h1>
                 <h2 className="hero-subheadline">Institute of Information Technology and Innovation</h2>
 
