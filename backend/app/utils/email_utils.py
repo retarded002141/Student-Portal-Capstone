@@ -4,7 +4,7 @@ import requests
 
 def send_otp_email(recipient_email: str, otp_code: str):
     """Sends an OTP verification code for Email Change via Resend HTTPS REST API."""
-    api_key = os.getenv("RESEND_API_KEY", "re_ZHT5oxim_FjHN3Ah9Xo8nWBKHpPxF3YFC").strip()
+    api_key = os.getenv("RESEND_API_KEY", "").strip()
 
     owner_email = "justin.tamayo00214@gmail.com"
     target_email = recipient_email if recipient_email.endswith("@gmail.com") and recipient_email == owner_email else owner_email
@@ -48,7 +48,7 @@ def send_otp_email(recipient_email: str, otp_code: str):
 
 def send_password_reset_email(recipient_email: str, otp_code: str):
     """Sends a Password Reset OTP verification code via Resend HTTPS REST API."""
-    api_key = os.getenv("RESEND_API_KEY", "re_ZHT5oxim_FjHN3Ah9Xo8nWBKHpPxF3YFC").strip()
+    api_key = os.getenv("RESEND_API_KEY", "").strip()
 
     owner_email = "justin.tamayo00214@gmail.com"
     target_email = recipient_email if recipient_email.endswith("@gmail.com") and recipient_email == owner_email else owner_email
