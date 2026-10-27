@@ -1,0 +1,139 @@
+.hero {
+  position: relative;
+  width: auto;
+  height: 700px;
+  padding: 50px;
+  display: flex;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  align-items: center;
+  gap: 50px;
+  background-blend-mode: multiply; 
+}
+
+.hero-capsule {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 95%;                  
+  max-width: 1800px;           
+  height: 520px;               
+  background: rgba(13, 20, 13, 0.352); 
+  border-radius: 0 260px 260px 0; 
+  display: flex;
+  align-items: center;
+  padding: 0 120px 0 50px;     
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: none;           
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+}
+
+.hero-subheadline {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+
+
+.hero-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.iitiLogo {
+  height: 260px;
+  object-fit: contain;
+}
+
+.heroTexts {
+  flex: 1;
+  text-align: justify;
+  color: white;
+}
+
+.heroTextsInner h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.heroP {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.loginButton {
+  margin-top: 18px;
+  background-color: #2e522a;
+  color: white;
+  border: none;
+  padding: 10px 36px;
+  font-size: 18px;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 160px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.loginButton:hover { background-color: #233f20; }
+.loginButton:active { transform: scale(0.98); }
+
+@media (max-width: 992px) {
+  .hero {
+    height: auto;
+    padding: 40px 0;
+  
+  .hero-subheadline { font-size: 16px; }
+  }
+
+  .hero-capsule {
+    position: relative;
+    top: 0;
+    transform: none;
+    width: 95%;
+    height: auto;
+    border-radius: 0 40px 40px 0; 
+    padding: 40px 32px;
+  }
+
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .iitiLogo { height: 180px; }
+  .heroTexts { text-align: center; }
+  .heroTextsInner h1 { font-size: 24px; }
+  .heroP { font-size: 14px; line-height: 1.6; }
+  .loginButton { align-self: center; }
+}
+
+@media (max-width: 768px) {
+  .hero-capsule {
+    width: 100%;
+    border-radius: 0; 
+    padding: 32px 16px;
+  }
+}

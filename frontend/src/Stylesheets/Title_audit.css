@@ -1,0 +1,393 @@
+.curriculum-container {
+  padding: 24px 32px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.curriculum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.curriculum-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Enforces strict column widths to eliminate horizontal page scroll */
+}
+
+/* Explicit column width allocations */
+.col-code {
+  width: 15%;
+}
+
+.col-title {
+  width: 55%;
+}
+
+.col-num {
+  width: 15%;
+}
+
+.col-grade {
+  width: 15%;
+}
+
+/* Truncate long course titles with ellipsis (...) */
+.curriculum-table td.title-cell {
+  max-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.curriculum-note {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #b91c1c; /* Crimson color matching standard alert design setups */
+}
+
+.year-tabs {
+  display: inline-flex;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.year-tab {
+  padding: 10px 18px;
+  border: none;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  color: #9ca3af;
+  font-weight: 500;
+  border-right: 1px solid #d1d5db;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.year-tab:last-child { border-right: none; }
+.year-tab:hover { background: rgba(46, 82, 42, 0.06); color: #2e522a; }
+.year-tab.active { background: rgba(46, 82, 42, 0.14); color: #2e522a; font-weight: 600; }
+
+.year-tab:disabled,
+.year-tab.disabled-tab {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border: 1px dashed #d1d5db;
+  opacity: 0.6;
+}
+
+.year-tab:disabled:hover { background-color: #f3f4f6; color: #9ca3af; }
+.curriculum-block { margin-top: 18px; }
+
+.semester-bar {
+  background: #e8f5e9;
+  padding: 12px 14px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #111111;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.curriculum-table-wrapper {
+  background: #ffffff;
+  overflow-x: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  -webkit-overflow-scrolling: touch;
+}
+
+.curriculum-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.curriculum-table thead tr { background: #ffffff; }
+
+.curriculum-table th {
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111111;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.curriculum-table td {
+  padding: 14px 16px;
+  font-size: 16px;
+  color: #111111;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Container block wrapper for each school year record group */
+.curriculum-year-group {
+  margin-top: 24px;
+  width: 100%;
+}
+
+/* ==========================================
+   SCHOOL YEAR HEADER (TEXT ONLY)
+========================================== */
+.school-year-banner {
+  background: transparent; 
+  border: none;            
+  color: #1e293b;          
+  padding: 16px 0 8px;     
+  font-weight: 700;
+  font-size: 18px;         
+  text-align: center;      
+  letter-spacing: 0.5px;
+  width: 100%;
+}
+
+/* ==========================================
+   SEMESTER SUBBARS (RESTORED COLOR & BOX)
+========================================== */
+.semester-sub-bar {
+  background: #e8f5e9; /* Reverted back to the original light tinted green overlay color */
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #111111;
+  text-align: center;
+  border-left: 1px solid #dcefd8;
+  border-right: 1px solid #dcefd8;
+  box-sizing: border-box;
+}
+
+/* Flex rows split columns framework layouts */
+.semester-split-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+  align-items: flex-start;
+  box-sizing: border-box;
+  margin-top: 8px;
+}
+
+.semester-column {
+  flex: 1;
+  min-width: 0; /* Prevents text overflow rules from forcing layout expansion */
+  display: flex;
+  flex-direction: column;
+}
+
+.audit-empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-top: 18px;
+}
+
+.grades-empty {
+  text-align: center;
+  padding: 24px 16px !important;
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+/* =====================================================
+   TITLE AUDIT SKELETON LOADING & SPINNER ANIMATION
+===================================================== */
+.audit-loading-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 32px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.audit-spinner-wrapper {
+  padding: 16px 0;
+  display: grid;
+  place-items: center;
+}
+
+.audit-circular-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid rgba(46, 82, 42, 0.15);
+  border-top-color: #2e522a;
+  border-radius: 50%;
+  animation: auditSpin 0.8s linear infinite;
+}
+
+@keyframes auditSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.audit-skeleton-lines {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.audit-skeleton-line {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: auditShimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+.audit-skeleton-line.short {
+  width: 30%;
+  height: 24px;
+}
+
+.audit-skeleton-line.full {
+  width: 100%;
+  height: 46px;
+}
+
+@keyframes auditShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE LAYOUT REDESIGN
+========================================== */
+
+/* Desktop & Large Tablets: Keep your side-by-side view */
+@media (min-width: 1025px) {
+  .semester-split-row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    align-items: flex-start;
+    box-sizing: border-box;
+    margin-top: 8px;
+  }
+
+  .semester-column {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Mobile & Small Tablets: Transition to a stacked, high-readability card layout */
+@media (max-width: 1024px) {
+  .curriculum-container {
+    padding: 16px 14px;
+    width: 100%;
+    overflow-x: hidden; /* Strongly prevents the whole web viewport from swaying left/right */
+    box-sizing: border-box;
+  }
+
+  .curriculum-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .page-title {
+    font-size: 22px;
+  }
+
+  .curriculum-note {
+    font-size: 13px;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .curriculum-year-group {
+    width: 100%;
+    margin-top: 20px;
+    box-sizing: border-box;
+  }
+
+  .school-year-banner {
+    font-size: 16px;
+    padding: 12px 0 4px;
+    width: 100%;
+    border-bottom: 2px solid #e2e8f0; /* Soft underlying rule for context grounding */
+  }
+
+  /* REARRANGEMENT: Stacks 1st Sem and 2nd Sem sequentially into 100% full-width blocks */
+  .semester-split-row {
+    display: flex;
+    flex-direction: column;
+    gap: 24px; /* Distinct visual break between the semester tables */
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+  }
+
+  .semester-column {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .semester-sub-bar {
+    padding: 10px 14px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 6px 6px 0 0; /* Rounds the top headers for look parity */
+  }
+
+  /* Isolate swiping strictly within each independent full-width table card wrapper */
+  .curriculum-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto; 
+    display: block;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 0 0 6px 6px;
+    border: 1px solid #e5e7eb;
+    border-top: none; /* Blends seamlessly directly under your header block tint */
+    -webkit-overflow-scrolling: touch; 
+  }
+
+  .curriculum-table {
+    min-width: 580px; /* Restores pristine column width allocations inside the localized scroll tracks */
+    width: 100%;
+  }
+
+  .curriculum-table th, 
+  .curriculum-table td {
+    padding: 12px 14px;
+    font-size: 14px; /* Balanced mobile typographic sizing */
+  }
+  
+  .col-grade,
+  .col-code,
+  .col-num {
+    width: auto;
+  }
+
+  .grades-empty {
+    padding: 20px 16px !important;
+  }
+}

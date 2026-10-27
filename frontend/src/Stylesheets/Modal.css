@@ -1,0 +1,52 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+
+.modalCard {
+  width: min(980px, 96vw);
+  min-height: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  padding: 36px 32px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalClose {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  color: #2e522a;
+  z-index: 10;
+}
+
+@media (max-width: 560px) {
+  .modalOverlay {
+    padding: 12px;
+  }
+  
+  .modalCard {
+    padding: 32px 20px 24px;
+    border-radius: 12px;
+  }
+  
+  .modalClose {
+    top: 8px;
+    right: 14px;
+    font-size: 28px;
+  }
+}

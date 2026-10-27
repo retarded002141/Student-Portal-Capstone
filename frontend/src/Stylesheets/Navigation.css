@@ -1,0 +1,841 @@
+.navigation {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e6e6e6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  position: sticky; /* Keeps the navbar pinned to the top of the viewport */
+  top: 0;           /* Sets the pinning threshold at the very top edge */
+  z-index: 1000;    /* Elevated to ensure dropdowns and panels never lose tap priority */
+  box-sizing: border-box;
+}
+
+/* =======================================================
+   DESKTOP ROUTING NAVIGATION LIST
+======================================================= */
+.nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0 40px; /* Increased side padding for a premium look */
+  gap: 32px;
+  box-sizing: border-box;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex; /* Flex layout allows nodes to scale dynamically */
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  gap: 40px; /* Increased gap spacing to give components breathing room */
+  position: relative; /* Crucial context container for the absolute indicator path */
+  flex: 1; /* Automatically extends to occupy the layout balance */
+}
+
+.nav-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #545454;
+  padding: 16px 8px; /* Safe padding context to increase hit targets */
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: #2e522a;
+}
+
+/* =======================================================
+   SLIDING ACTIVE HIGHLIGHT LINE INDICATOR
+======================================================= */
+.nav-sliding-indicator {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  height: 4px;
+  background: #2e522a;
+  border-radius: 999px;
+  /* Animates left translation and width adjustments beautifully */
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
+              width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 0.2s ease;
+  pointer-events: none; /* Prevents interrupting click interactions */
+}
+
+/* =======================================================
+   DISABLED EVALUATION BUTTON STYLING
+======================================================= */
+.disabled-nav-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: #a3a3a3 !important;
+  cursor: not-allowed !important;
+  padding: 16px 4px;
+  white-space: nowrap;
+  opacity: 0.55;
+}
+
+.disabled-nav-btn-mobile {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: #a3a3a3 !important;
+  cursor: not-allowed !important;
+  padding: 14px 14px;
+  opacity: 0.55;
+}
+
+/* =======================================================
+   ISOLATED NOTIFICATION AND PROFILE CONTAINER
+======================================================= */
+.desktop-only-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 16px;
+  border-left: 1px solid #e2e8f0; /* Soft visual separation line */
+  gap: 16px; /* Space between notification icon and avatar image button */
+}
+
+.nav-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notif-btn {
+  background: transparent; /* Removes the old white circle background */
+  border: none;            /* Removes the circular border ring */
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+  padding: 6px;
+  color: #64748b;
+  position: relative;
+}
+
+.notif-btn:hover {
+  transform: scale(1.05);
+}
+
+.notif-btn:hover,
+.notif-btn.active {
+  color: #2e522a; /* Smoothly changes the icon color to match the theme */
+}
+
+.notif-badge {
+  position: absolute;
+  top: 1px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: #d97706;
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* =======================================================
+   AVATAR CLICK TARGET COMPONENT
+======================================================= */
+.nav-avatar-btn {
+  width: 43px;
+  height: 43px;
+  border-radius: 50%;
+  border: 2px solid #798ea7;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-avatar-btn:hover {
+  transform: scale(1.04);
+  border-color: #2e522a;
+}
+
+.nav-avatar-btn.active {
+  border-color: #2e522a;
+  box-shadow: 0 0 0 2px rgba(46, 82, 42, 0.25);
+}
+
+.nav-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.nav-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  background-color: #c4c8d2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =======================================================
+   NOTIFICATION SLIDEOUT PANEL CARD
+======================================================= */
+.notif-panel {
+  position: absolute;
+  top: 50px;
+  right: -8px;
+  width: 360px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  z-index: 150;
+  transform-origin: top right;
+  animation: popOver 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.notif-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.notif-count-tag {
+  font-size: 11px;
+  font-weight: 600;
+  background: #fef3c7;
+  color: #d97706;
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+
+.notif-mark {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #2e522a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.notif-mark:hover {
+  text-decoration: underline;
+}
+
+.notif-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.notif-empty {
+  padding: 32px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-empty p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background-color 0.15s ease;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item.unread {
+  background-color: #f8fafc;
+}
+
+.notif-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.unread .notif-status-dot {
+  background-color: #2e522a;
+}
+
+.notif-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.notif-item-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.unread .notif-item-title {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.notif-item-msg {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.notif-item-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
+/* =======================================================
+   NAVBAR LOGOUT CONFIRMATION MODAL OVERLAY
+======================================================= */
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.logout-modal {
+  width: min(380px, calc(100vw - 32px));
+  background: white;
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box; 
+}
+
+.logout-modal h3 {
+  margin: 0;
+  color: #000000;
+  font-size: 20px;
+}
+
+.logout-modal p {
+  margin: 20px 0 28px;
+  color: #555;
+  font-size: 16px;
+}
+
+.logout-modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 26px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cancel-btn {
+  background: #e5e5e5;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background: #d5d5d5;
+}
+
+.confirm-btn {
+  background: #e5e5e5;
+  color: rgb(0, 0, 0);
+}
+
+.confirm-btn:hover {
+  background: #FDECEC;
+  color: #B91C1C;
+}
+
+.nav-logout-loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+  width: 100%;
+}
+
+.nav-portal-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #2e522a;
+  border-radius: 50%;
+  animation: navSpinSmooth 0.8s linear infinite;
+}
+
+@keyframes navSpinSmooth {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =======================================================
+   PROFILE SYSTEM WRAPPER
+======================================================= */
+.profile-dropdown-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* =======================================================
+   PROFILE QUICK ACTIONS DROP-DOWN PANEL
+======================================================= */
+.profile-panel {
+  position: absolute;
+  top: 50px;
+  right: 0px;
+  width: 285px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  z-index: 150;
+  transform-origin: top right;
+  animation: popOver 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.profile-panel-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #fafbfc;
+}
+
+/* USER INFO CARD IN DROPDOWN HEADER */
+.profile-card-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid #d1d5db;
+  flex-shrink: 0;
+}
+
+.profile-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-card-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  background-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.profile-card-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.profile-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.profile-card-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-card-section {
+  color: #b91c1c;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.profile-card-sub {
+  font-size: 11.5px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* STATUS PILL BADGE IN DROPDOWN CARD */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1.3;
+}
+
+.status-pill.regular {
+  background-color: #e4f6e2;
+  color: #2e522a;
+  border: 1px solid #b2e2ae;
+}
+
+.status-pill.irregular {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.profile-panel-links {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+}
+
+.profile-panel-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #334155;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.profile-panel-item svg {
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.profile-panel-item:hover {
+  background-color: #f5faf4;
+  color: #2e522a;
+}
+
+.profile-panel-item:hover svg {
+  color: #2e522a;
+}
+
+.profile-panel-divider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 6px 0;
+}
+
+.logout-shortcut {
+  color: #b91c1c;
+}
+
+.logout-shortcut svg {
+  color: #ef4444;
+}
+
+.logout-shortcut:hover {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.logout-shortcut:hover svg {
+  color: #991b1b;
+}
+
+/* =======================================================
+   MOBILE / TABLET STYLING OVERRIDES
+======================================================= */
+.mobile-nav {
+  display: none;
+}
+
+.hamburger {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 10px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.hamburger span {
+  width: 18px;
+  height: 2px;
+  background: #2e522a;
+  border-radius: 999px;
+}
+
+.mobile-brand {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-brand img {
+  width: 34px;
+  height: 34px;
+}
+
+.mobile-brand span {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2933;
+}
+
+.mobile-actions-wrapper {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+@media (max-width: 1024px) {
+  .nav-row { 
+    display: none; 
+  }
+  
+  .mobile-nav {
+    position: relative;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    min-height: 60px;
+    gap: 16px;
+    background: #ffffff;
+  }
+  
+  .hamburger, .mobile-brand { 
+    display: flex; 
+  }
+  
+  .mobile-nav .nav-avatar-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .notif-panel {
+    position: fixed !important;
+    top: 68px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 24px) !important;
+    max-width: 360px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
+    transform-origin: top center !important;
+  }
+  
+  .profile-panel {
+    position: absolute;
+    top: 52px;
+    right: 0px;
+    width: 275px;
+    z-index: 1002;
+  }
+}
+
+/* =======================================================
+   MOBILE DRAWER OVERLAY WINDOWS
+======================================================= */
+.mobileMenuOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  z-index: 120;
+  display: flex;
+  animation: fadeOverlay 0.25s ease-out forwards;
+}
+
+.mobileMenu {
+  width: min(82vw, 320px);
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.18);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  animation: slideMenu 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mobileMenuHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.menuBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.menuBrand img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.menuBrandText {
+  min-width: 0;
+}
+
+.menuTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1f2933;
+  line-height: 1.2;
+}
+
+.menuSubtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.mobileMenuLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 18px;
+}
+
+.m-link {
+  text-decoration: none;
+  color: #374151;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 14px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.m-link:hover,
+.m-link.active {
+  background: #f5faf4;
+  color: #2e522a;
+}
+
+/* =======================================================
+   ANIMATIONS DISPATCHING MATRICES
+======================================================= */
+@keyframes popOver {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideMenu {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}

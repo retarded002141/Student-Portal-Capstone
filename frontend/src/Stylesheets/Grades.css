@@ -1,0 +1,289 @@
+.grades-page-container {
+  padding: 24px 32px;
+  min-height: 100vh;
+  background: #f8f8f8;
+}
+
+.grades-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  position: relative; /* REQUIRED */
+  z-index: 100;       /* REQUIRED to stay above the table */
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #1f2933;
+}
+
+.grades-note {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #b91c1c;
+}
+
+.academic-year-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 240px;
+  position: relative; /* Context container boundary anchoring for list panels */
+}
+
+.academic-year-select-group .input-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.grades-select-wrap {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   CUSTOM STYLED DROPDOWN CONTROL EXTENSIONS
+========================================= */
+.grades-custom-select-trigger {
+  width: 100%;
+  height: 46px;
+  padding: 0 40px 0 14px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grades-custom-select-trigger:hover {
+  border-color: #9ca3af;
+}
+
+.grades-custom-select-trigger.open {
+  border-color: #2e522a;
+  box-shadow: 0 0 0 3px rgba(46, 82, 42, 0.12);
+}
+
+.grades-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.grades-custom-dropdown-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  box-sizing: border-box;
+}
+
+.grades-custom-option {
+  padding: 12px 14px;
+  font-size: 15px;
+  color: #1f2937;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Safely truncates layout extensions with trailing periods */
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.grades-custom-option:hover {
+  background-color: #e4f6e2;
+  color: #2e522a;
+}
+
+/* =========================================
+   TABLE ARCHITECTURE AND CELL STYLINGS
+========================================= */
+.grades-table-wrapper {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+  margin-bottom: 80px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grades-table thead {
+  background-color: #e4f6e2;
+}
+
+.grades-table th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  border-bottom: 1px solid #dcefd8;
+  white-space: nowrap;
+}
+
+.grades-table td {
+  padding: 16px 20px;
+  font-size: 15px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.grades-table tr:last-child td {
+  border-bottom: none;
+}
+
+.grades-table .num { text-align: left; }
+.course-code { font-size: 12px; color: #b91c1c; font-weight: 600; }
+.course-title { font-weight: 500; }
+.prof-name { font-weight: 500; color: #1f2933; }
+.email { font-size: 12px; color: #6b7280; }
+.final-grade-val.numeric-grade { color: #b91c1c; font-weight: 600; }
+.final-grade-val.red-dash { color: #b91c1c; font-weight: 600; }
+.grades-empty { text-align: center; color: #6b7280; padding: 24px 16px; }
+
+.grades-summary {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  display: flex;
+  z-index: 1000;
+}
+
+.gwa-card {
+  background-color: #2e522a;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 12px 24px;
+  min-width: 140px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.gwa-label { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.gwa-value { font-size: 22px; font-weight: 700; }
+
+/* =====================================================
+   GRADES SKELETON LOADING & SPINNER ANIMATION
+===================================================== */
+.grades-loading-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 32px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.grades-spinner-wrapper {
+  padding: 16px 0;
+  display: grid;
+  place-items: center;
+}
+
+.grades-circular-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid rgba(46, 82, 42, 0.15);
+  border-top-color: #2e522a;
+  border-radius: 50%;
+  animation: gradesSpin 0.8s linear infinite;
+}
+
+@keyframes gradesSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.grades-skeleton-lines {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grades-skeleton-line {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: gradesShimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+.grades-skeleton-line.short {
+  width: 30%;
+  height: 24px;
+}
+
+.grades-skeleton-line.full {
+  width: 100%;
+  height: 46px;
+}
+
+@keyframes gradesShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================
+   MEDIA QUERY MATRIX RESPONSIVE OVERRIDES
+========================================= */
+@media (max-width: 992px) {
+  .grades-page-container { padding: 20px 18px; }
+  .page-title { font-size: 20px; }
+  .grades-note { font-size: 13px; }
+  .grades-table th, .grades-table td { font-size: 14px; padding: 12px 14px; }
+}
+
+@media (max-width: 768px) {
+  .grades-page-container { padding: 18px 14px; }
+  .grades-page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .academic-year-select-group { width: 100%; }
+  .grades-note { display: none; }
+  .grades-table-wrapper { margin-bottom: 24px; }
+  .grades-table { min-width: 800px; }
+  .grades-summary { position: static; margin-top: 16px; justify-content: stretch; }
+  .gwa-card { width: 100%; box-shadow: none; border: 1px solid #e5e7eb; }
+}
