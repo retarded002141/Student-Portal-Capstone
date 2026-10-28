@@ -17,7 +17,7 @@ origins = [
     "http://localhost:5174",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
-    "https://iiti-student-portal.vercel.app",
+    "https://student-portal-capstone-2qp4.vercel.app",
 ]
 
 app.add_middleware(
