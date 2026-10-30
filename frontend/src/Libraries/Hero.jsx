@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import studentsBg from "../assets/IMG_1350.JPG"; // Fixed case to .JPG
+import studentsBg from "../assets/IMG_1350.JPG";
 import iitiLogo from "../assets/iitilogo.png";
 import "../Stylesheets/Hero.css";
-import { API_BASE_URL } from "../api/axios";
 
 import Modal from "./Modal";
 import Login from "./Login";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "../api/axios";
 
 function Hero() {
   const [activeModal, setActiveModal] = useState(null);
@@ -24,12 +22,11 @@ function Hero() {
     }
   }, [searchParams, setSearchParams, isLoggedIn]);
 
-  // Fetch name only if logged in
   useEffect(() => {
     if (isLoggedIn) {
       const fetchName = async () => {
         try {
-          const res = await fetch(`${API_BASE_URL}/student/profile`, {
+          const res = await fetch(`${API_BASE_URL}/api/student/profile`, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
           });
           const data = await res.json();
@@ -40,7 +37,6 @@ function Hero() {
     }
   }, [isLoggedIn]);
 
-  // Dynamic greeting logic
   const getGreeting = () => {
     if (!isLoggedIn) return "Welcome to the IITI Student Portal, BTECHENYO!";
     return `Welcome back, ${studentName}!`;
