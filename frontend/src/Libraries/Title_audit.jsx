@@ -1,8 +1,7 @@
-// src/Libraries/Title_audit.jsx
 import { useEffect, useMemo, useState } from "react";
 import "../Stylesheets/Title_audit.css";
+import { API_BASE_URL } from "../api/axios";
 
-// BPC Official Grading Conversion Table
 const convertToNumberGrade = (raw) => {
   if (raw === undefined || raw === null || raw === "" || raw === "--") {
     return "--";
@@ -62,12 +61,11 @@ export default function Title_audit() {
       }
 
       try {
-        // Fetch both Grades and Schedule simultaneously
         const [gradesRes, scheduleRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/student/grades", {
+          fetch(`${API_BASE_URL}/api/student/grades`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://127.0.0.1:8000/api/student/schedule", {
+          fetch(`${API_BASE_URL}/api/student/schedule`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -95,7 +93,6 @@ export default function Title_audit() {
     return rows.reduce((acc, r) => acc + Number(r.units || 0), 0);
   };
 
-  // Merge enrolled schedule subjects with grade records
   const mergedAuditData = useMemo(() => {
     const allTerms = Array.from(
       new Set([...Object.keys(backendSchedules), ...Object.keys(backendGrades)])
@@ -109,7 +106,6 @@ export default function Title_audit() {
 
       const subjectMap = new Map();
 
-      // 1. Add enrolled subjects from Schedule
       schedSubjects.forEach((sub) => {
         const code = (sub.code || "").toUpperCase();
         if (!subjectMap.has(code)) {
@@ -122,7 +118,6 @@ export default function Title_audit() {
         }
       });
 
-      // 2. Overlay recorded grades from Grades
       gradeSubjects.forEach((gradeSub) => {
         const code = (gradeSub.code || "").toUpperCase();
         if (subjectMap.has(code)) {
@@ -213,7 +208,6 @@ export default function Title_audit() {
               <div className="school-year-banner">{syKey}</div>
 
               <div className="semester-split-row">
-                {/* 1st Semester Column */}
                 <div className="semester-column">
                   <div className="semester-sub-bar">1st Semester</div>
                   <div className="curriculum-table-wrapper">
@@ -270,7 +264,6 @@ export default function Title_audit() {
                   </div>
                 </div>
 
-                {/* 2nd Semester Column */}
                 <div className="semester-column">
                   <div className="semester-sub-bar">2nd Semester</div>
                   <div className="curriculum-table-wrapper">

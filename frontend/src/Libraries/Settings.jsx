@@ -1,7 +1,7 @@
-// src/Libraries/Settings.jsx
 import { useState, useEffect, useRef } from "react";
 import "../Stylesheets/Settings.css";
 import Modal from "./Modal.jsx";
+import { API_BASE_URL } from "../api/axios";
 
 export default function Settings() {
   const [form, setForm] = useState({
@@ -19,15 +19,12 @@ export default function Settings() {
   const [isChanged, setIsChanged] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Email Change Modal State Flow:
-  // "password" | "loadingPassword" | "otp" | "otpInvalid" | "loadingOtp" | "success"
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [emailModalMode, setEmailModalMode] = useState("password");
   const [emailConfirmPassword, setEmailConfirmPassword] = useState("");
   const [showConfirmEmailPass, setShowConfirmEmailPass] = useState(false);
   const [otpInput, setOtpInput] = useState("");
 
-  // System Result Modal State
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("Success");
   const [modalDesc, setModalDesc] = useState("Changes applied successfully.");
@@ -59,7 +56,7 @@ export default function Settings() {
     const fetchCurrentEmail = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://127.0.0.1:8000/api/student/profile", {
+        const response = await fetch(`${API_BASE_URL}/api/student/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.ok) {
@@ -138,7 +135,6 @@ export default function Settings() {
       return;
     }
 
-    // CASE 1: Password Change Request
     if (form.oldPassword || form.newPassword || form.confirmPassword) {
       if (!form.oldPassword) {
         triggerNotification("Authorization Required", "Please enter your old password to authorize this change.", true, false);
@@ -157,7 +153,6 @@ export default function Settings() {
       return;
     }
 
-    // CASE 2: Email Change Request
     if (form.email !== initialForm.email) {
       setEmailConfirmPassword("");
       setOtpInput("");
@@ -170,7 +165,7 @@ export default function Settings() {
   const handleSavePasswordUpdate = async (token) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/profile/password", {
+      const response = await fetch(`${API_BASE_URL}/api/student/profile/password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -199,7 +194,6 @@ export default function Settings() {
     }
   };
 
-  // STEP 1: Verify Password & Dispatch Real Email OTP
   const handleVerifyPassword = async (e) => {
     e.preventDefault();
     if (!emailConfirmPassword.trim()) {
@@ -211,8 +205,7 @@ export default function Settings() {
     setEmailModalMode("loadingPassword");
 
     try {
-      // 1. Verify Password
-      const passRes = await fetch("http://127.0.0.1:8000/api/student/profile/verify-password", {
+      const passRes = await fetch(`${API_BASE_URL}/api/student/profile/verify-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -228,8 +221,7 @@ export default function Settings() {
         return;
       }
 
-      // 2. Request backend to send real OTP email
-      const otpRes = await fetch("http://127.0.0.1:8000/api/student/profile/send-email-otp", {
+      const otpRes = await fetch(`${API_BASE_URL}/api/student/profile/send-email-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -252,7 +244,6 @@ export default function Settings() {
     }
   };
 
-  // STEP 2: Verify OTP & Commit Email Update in DB
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     if (!otpInput.trim()) {
@@ -264,7 +255,7 @@ export default function Settings() {
     setEmailModalMode("loadingOtp");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/profile/email", {
+      const response = await fetch(`${API_BASE_URL}/api/student/profile/email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -296,7 +287,7 @@ export default function Settings() {
     setOtpInput("");
 
     try {
-      const otpRes = await fetch("http://127.0.0.1:8000/api/student/profile/send-email-otp", {
+      const otpRes = await fetch(`${API_BASE_URL}/api/student/profile/send-email-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -335,7 +326,6 @@ export default function Settings() {
     <div className="settings-wrapper">
       <h3 className="section-title reveal-on-scroll">Security Settings</h3>
 
-      {/* Contact Info Section */}
       <div className="form-section reveal-on-scroll delay-1">
         <label className="section-sub-title">Personal Contact Information</label>
         <span className="section-instruction-red"></span>
@@ -353,7 +343,6 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Password Section */}
       <div className="form-section reveal-on-scroll delay-2">
         <label className="section-sub-title">Password</label>
 
@@ -402,14 +391,12 @@ export default function Settings() {
         </button>
       </div>
 
-      {/* MULTI-STEP EMAIL CHANGE MODAL */}
       <Modal
         isOpen={showEmailModal}
         onClose={handleCloseEmailModal}
         ariaLabel="Email Change Verification"
       >
         <div className="auth">
-          {/* PHASE 1: ENTER PASSWORD */}
           {emailModalMode === "password" && (
             <>
               <h2 className="authTitle">Confirm Password</h2>
@@ -444,7 +431,6 @@ export default function Settings() {
             </>
           )}
 
-          {/* PHASE 1.5: LOADING TIED TO PASSWORD VERIFICATION & SENDING OTP */}
           {emailModalMode === "loadingPassword" && (
             <div className="loginLoading">
               <div className="loginSpinner"></div>
@@ -453,7 +439,6 @@ export default function Settings() {
             </div>
           )}
 
-          {/* PHASE 2: ENTER OTP */}
           {emailModalMode === "otp" && (
             <>
               <h2 className="authTitle">Enter Verification Code</h2>
@@ -511,7 +496,6 @@ export default function Settings() {
             </>
           )}
 
-          {/* INVALID OTP ERROR SCREEN */}
           {emailModalMode === "otpInvalid" && (
             <div className="loginLoading">
               <div className="success-checkmark-icon-wrapper" style={{ backgroundColor: "#fef2f2" }}>
@@ -539,7 +523,6 @@ export default function Settings() {
             </div>
           )}
 
-          {/* PHASE 2.5: LOADING TIED TO UPDATING EMAIL */}
           {emailModalMode === "loadingOtp" && (
             <div className="loginLoading">
               <div className="loginSpinner"></div>
@@ -548,7 +531,6 @@ export default function Settings() {
             </div>
           )}
 
-          {/* PHASE 3: SUCCESS CONFIRMATION PANEL */}
           {emailModalMode === "success" && (
             <div className="loginLoading">
               <div className="success-checkmark-icon-wrapper">
@@ -574,7 +556,6 @@ export default function Settings() {
         </div>
       </Modal>
 
-      {/* GENERAL RESULT / NOTIFICATION MODAL */}
       {showSuccessModal && (
         <div className="settings-modal-overlay">
           <div className="settings-modal-card">

@@ -1,13 +1,12 @@
-// src/Libraries/Class_schedule.jsx
 import { useEffect, useState, useRef, useMemo } from "react";
 import "../Stylesheets/Class_schedule.css";
+import { API_BASE_URL } from "../api/axios";
 
 export default function Class_schedule() {
   const [allSchedules, setAllSchedules] = useState({});
   const [selectedYear, setSelectedYear] = useState("");
   const [scheduleData, setScheduleData] = useState(null);
 
-  // CUSTOM DROPDOWN CONTROL STATE
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const yearDropdownRef = useRef(null);
 
@@ -40,14 +39,11 @@ export default function Class_schedule() {
       }
 
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/student/schedule",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/api/student/schedule`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const data = await response.json();
 
@@ -89,7 +85,6 @@ export default function Class_schedule() {
     setIsYearDropdownOpen(false);
   };
 
-  // Group subjects by code to stack multiple schedule times/rooms for 1 subject
   const groupedSubjects = useMemo(() => {
     if (!scheduleData?.subjects) return [];
 
@@ -206,21 +201,18 @@ export default function Class_schedule() {
 
                 <td className="num">{subject.units}</td>
                 
-                {/* Stacked Rooms */}
                 <td>
                   {subject.rooms.map((rm, idx) => (
                     <div key={idx}>{rm}</div>
                   ))}
                 </td>
 
-                {/* Stacked Sections */}
                 <td>
                   {subject.sections.map((sec, idx) => (
                     <div key={idx}>{sec}</div>
                   ))}
                 </td>
 
-                {/* Stacked Schedules */}
                 <td className="schedule-time">
                   {subject.schedules.map((sch, idx) => (
                     <div key={idx}>{sch}</div>

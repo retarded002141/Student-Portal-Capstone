@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import studentsBg from "../assets/IMG_1350.JPG"; // Fixed case to .JPG
 import iitiLogo from "../assets/iitilogo.png";
 import "../Stylesheets/Hero.css";
+import { API_BASE_URL } from "../api/axios";
 
 import Modal from "./Modal";
 import Login from "./Login";

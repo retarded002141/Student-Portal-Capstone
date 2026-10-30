@@ -1,6 +1,7 @@
 import "../Stylesheets/Footer.css";
 import iitiLogo from "../assets/iitilogo.png";
 import schoolLogo from "../assets/logo.png";
+import { API_BASE_URL } from "../api/axios";
 
 function Footer() {
   return (

@@ -1,14 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../Stylesheets/Announcements.css";
+import { API_BASE_URL as BASE } from "../api/axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api/student/announcements/all";
+const API_BASE_URL = `${BASE}/api/student/announcements/all`;
 
-/* =========================================
-   SORTING HELPER WITH MONGO DB TIE-BREAKER
-========================================= */
 function getObjectIdTimestamp(item) {
   const idStr = item?._id || item?.id || "";
-  // Extracts the exact creation timestamp embedded inside MongoDB ObjectIds
   if (typeof idStr === "string" && idStr.length >= 8) {
     const timestampHex = idStr.substring(0, 8);
     const parsedSec = parseInt(timestampHex, 16);
@@ -21,7 +18,6 @@ function getObjectIdTimestamp(item) {
 
 function sortByDateDesc(list) {
   return [...list].sort((a, b) => {
-    // 1. Primary Date Comparison
     let dateA = 0;
     let dateB = 0;
 
@@ -37,13 +33,10 @@ function sortByDateDesc(list) {
       dateB = Date.parse(b.date) || 0;
     }
 
-    // If dates are different, sort by date (newest first)
     if (dateA !== dateB) {
       return dateB - dateA;
     }
 
-    // 2. TIE-BREAKER: If dates are identical (e.g. both July 27, 2026),
-    // compare MongoDB ObjectId creation time so the newest post is on the far left!
     const creationA = getObjectIdTimestamp(a);
     const creationB = getObjectIdTimestamp(b);
 
@@ -51,9 +44,6 @@ function sortByDateDesc(list) {
   });
 }
 
-/* =========================
-   READ-ONLY MODAL
-========================= */
 function ViewModal({ open, item, onClose }) {
   useEffect(() => {
     if (!open) return;
@@ -114,9 +104,6 @@ function ViewModal({ open, item, onClose }) {
   );
 }
 
-/* =========================
-   REUSABLE CAROUSEL WITH SKELETON LOADING
-========================= */
 function AnnouncementCarousel({ items, loading, onOpen }) {
   const [index, setIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(3);
@@ -149,7 +136,6 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
     setIndex((i) => Math.min(i, maxIndex));
   }, [maxIndex]);
 
-  // 1. LOADING STATE: Render 3 Skeleton Cards with Spinner
   if (loading) {
     return (
       <div className="ann-loading-grid">
@@ -169,7 +155,6 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
     );
   }
 
-  // 2. EMPTY STATE: Shown only after fetch finishes with no data
   if (!items || items.length === 0) {
     return (
       <div className="ann-empty-state">
@@ -178,7 +163,6 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
     );
   }
 
-  // 3. DATA LOADED: Render Carousel Cards
   return (
     <section className="annc-container">
       <div className="carousel-wrap">
@@ -269,9 +253,6 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
   );
 }
 
-/* =========================
-   MAIN ANNOUNCEMENTS PAGE
-========================= */
 export default function Announcements() {
   const [iiti, setIiti] = useState([]);
   const [btech, setBtech] = useState([]);

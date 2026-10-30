@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import "../Stylesheets/Navigation.css";
 import iitiLogo from "../assets/iitilogo.png";
+import { API_BASE_URL } from "../api/axios";
 
 function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -76,7 +77,7 @@ function Navigation() {
       if (!token) return;
 
       try {
-        const notifRes = await fetch("http://127.0.0.1:8000/api/student/notifications", {
+        const notifRes = await fetch(`${API_BASE_URL}/api/student/notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (notifRes.ok && isMounted) {
@@ -94,7 +95,7 @@ function Navigation() {
       }
 
       try {
-        const profileRes = await fetch("http://127.0.0.1:8000/api/student/profile", {
+        const profileRes = await fetch(`${API_BASE_URL}/api/student/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (profileRes.ok && isMounted) {
@@ -102,7 +103,7 @@ function Navigation() {
           setStudentInfo(data);
 
           if (data.avatar_url) {
-            const fullUrl = `http://127.0.0.1:8000${data.avatar_url}`;
+            const fullUrl = `${API_BASE_URL}${data.avatar_url}`;
             setAvatarUrl((prev) => (prev?.split("?")[0] === fullUrl ? prev : fullUrl));
           } else {
             setAvatarUrl(null);
@@ -137,7 +138,7 @@ function Navigation() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
     try {
-      await fetch("http://127.0.0.1:8000/api/student/notifications/read-all", {
+      await fetch(`${API_BASE_URL}/api/student/notifications/read-all`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -158,7 +159,7 @@ function Navigation() {
     if (!notif.read) {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/student/notifications/read/${notifId}`, {
+        const res = await fetch(`${API_BASE_URL}/api/student/notifications/read/${notifId}${notifId}`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` }
         });

@@ -1,4 +1,5 @@
 import "../Stylesheets/Mission_vision.css";
+import { API_BASE_URL } from "../api/axios";
 
 function Mission_vision() {
   return (

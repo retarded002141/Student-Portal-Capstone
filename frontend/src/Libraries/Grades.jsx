@@ -1,6 +1,6 @@
-// src/Libraries/Grades.jsx
 import { useEffect, useMemo, useState, useRef } from "react";
 import "../Stylesheets/Grades.css";
+import { API_BASE_URL } from "../api/axios";
 
 function percentageToNumberGrade(value) {
   if (value === null || value === undefined || value === "" || value === "--") {
@@ -70,21 +70,20 @@ export default function Grades() {
       }
 
       try {
-        const gradesRes = await fetch("http://127.0.0.1:8000/api/student/grades", {
+        const gradesRes = await fetch(`${API_BASE_URL}/api/student/grades`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const gData = await gradesRes.json();
         const grades = gData.grades || {};
         setGradesData(grades);
 
-        const scheduleRes = await fetch("http://127.0.0.1:8000/api/student/schedule", {
+        const scheduleRes = await fetch(`${API_BASE_URL}/api/student/schedule`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const sData = await scheduleRes.json();
         const schedules = sData.schedules || {};
         setScheduleData(schedules);
 
-        // Dynamically select initial active term matching available database records
         const fetchedTerms = Array.from(new Set([...Object.keys(grades), ...Object.keys(schedules)]));
         if (fetchedTerms.length > 0) {
           setSelectedTerm(fetchedTerms[0]);
@@ -116,7 +115,6 @@ export default function Grades() {
     setIsTermDropdownOpen(false);
   };
 
-  // Combine schedule and grade records so un-graded subjects appear with '--'
   const combinedRows = useMemo(() => {
     if (!selectedTerm) return [];
 
@@ -125,7 +123,6 @@ export default function Grades() {
 
     const uniqueMap = new Map();
 
-    // 1. Add all subjects from the student's active schedule for the term
     termSchedule.forEach((schedSub) => {
       const code = (schedSub.code || "").toUpperCase();
       if (!uniqueMap.has(code)) {
@@ -144,7 +141,6 @@ export default function Grades() {
       }
     });
 
-    // 2. Add any additional subjects found in grades but not in schedule
     termGrades.forEach((gradeSub) => {
       const code = (gradeSub.code || "").toUpperCase();
       if (!uniqueMap.has(code)) {

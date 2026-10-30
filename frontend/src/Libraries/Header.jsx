@@ -2,6 +2,7 @@ import btechLogo from '../assets/logo.png';
 import logo from "../assets/iitilogo.png";
 import headerBg from '../assets/Header.jpg';
 import '../Stylesheets/Header.css';
+import { API_BASE_URL } from "../api/axios";
 
 function Header() {
   return (

@@ -1,11 +1,10 @@
-// src/Libraries/Profile.jsx
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "react-router-dom"; 
 import Cropper from "react-easy-crop";
 import "../Stylesheets/Profile.css";
 import Settings from "./Settings.jsx";
+import { API_BASE_URL } from "../api/axios";
 
-// Helper function to generate the cropped image file using canvas
 const getCroppedImg = async (imageSrc, pixelCrop) => {
   const image = new Image();
   image.src = imageSrc;
@@ -54,14 +53,12 @@ export default function Profile() {
   
   const location = useLocation();
 
-  // Avatar Modal & Cropping States
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [tempFile, setTempFile] = useState(null); 
   const [tempPreview, setTempPreview] = useState(null); 
   const [isRemoving, setIsRemoving] = useState(false); 
   const [isSaving, setIsSaving] = useState(false); 
   
-  // Cropper specific state
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -69,7 +66,6 @@ export default function Profile() {
 
   const fileInputRef = useRef(null);
 
-  // Scroll Reveal Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -98,7 +94,7 @@ export default function Profile() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/profile", {
+      const response = await fetch(`${API_BASE_URL}/api/student/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -217,7 +213,7 @@ export default function Profile() {
 
     try {
       if (isRemoving) {
-        const response = await fetch("http://127.0.0.1:8000/api/student/profile/avatar/remove", {
+        const response = await fetch(`${API_BASE_URL}/api/student/profile/avatar/remove`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -234,7 +230,7 @@ export default function Profile() {
         const formData = new FormData();
         formData.append("avatar", croppedImageBlob, "avatar.jpg");
 
-        const response = await fetch("http://127.0.0.1:8000/api/student/profile/avatar", {
+        const response = await fetch(`${API_BASE_URL}/api/student/profile/avatar`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -283,7 +279,6 @@ export default function Profile() {
   const personal = student?.personal_information || {};
   const education = student?.educational_background || {};
 
-  // SKELETON LOADING STATE WITH CIRCULAR SPINNER
   if (!student) {
     return (
       <main className="profile-page">
@@ -312,7 +307,7 @@ export default function Profile() {
   }
 
   const currentAvatarUrl = student.avatar_url
-    ? `http://127.0.0.1:8000${student.avatar_url}?t=${Date.now()}`
+    ? `${API_BASE_URL}${student.avatar_url}?t=${Date.now()}`
     : null;
 
   let modalAvatarPreview = currentAvatarUrl;
@@ -364,7 +359,6 @@ export default function Profile() {
               </span>
             </div>
 
-            {/* Student Number & Academic Status Side-by-Side */}
             <div className="student-credentials-row">
               <span className="student-number">Student no: {student.student_number}</span>
               <span className={`status-pill ${student.status?.toLowerCase() === "irregular" ? "irregular" : "regular"}`}>
@@ -408,7 +402,6 @@ export default function Profile() {
               <div className="form-section reveal-on-scroll delay-1">
                 <div className="form-section-title">Personal Records</div>
 
-                {/* Row 1: Name, Contact No, Civil Status */}
                 <div className="row-3">
                   <div className="input-group">
                     <label className="input-label">Name (PRINT)</label>
@@ -424,7 +417,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 2: Permanent Address (Full Width) */}
                 <div className="row-1">
                   <div className="input-group">
                     <label className="input-label">Permanent Address</label>
@@ -432,7 +424,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 3: Present Address (Full Width, Stacked Below Permanent) */}
                 <div className="row-1">
                   <div className="input-group">
                     <label className="input-label">Present Address</label>
@@ -440,7 +431,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 4: Age, Religion, Nationality */}
                 <div className="row-3">
                   <div className="input-group">
                     <label className="input-label">Age</label>
@@ -456,7 +446,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 5: Date of Birth, Place of Birth */}
                 <div className="row-2-even">
                   <div className="input-group">
                     <label className="input-label">Date of Birth (mm/dd/yy)</label>
@@ -468,7 +457,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 6: Father's Details */}
                 <div className="row-3">
                   <div className="input-group">
                     <label className="input-label">Father's Name</label>
@@ -484,7 +472,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 7: Mother's Details */}
                 <div className="row-3">
                   <div className="input-group">
                     <label className="input-label">Mother's Maiden Name</label>
@@ -500,7 +487,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 8: Guardian Details */}
                 <div className="row-2-even">
                   <div className="input-group">
                     <label className="input-label">Guardian</label>
@@ -512,7 +498,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Row 9: Guardian Address & Tel */}
                 <div className="row-2">
                   <div className="input-group">
                     <label className="input-label">Guardian's Address</label>
@@ -595,7 +580,6 @@ export default function Profile() {
         </section>
       </div>
 
-      {/* AVATAR EDIT MODAL */}
       {showAvatarModal && (
         <div className="avatar-modal-overlay" onClick={handleCloseAvatarModal}>
           <div className="avatar-modal" onClick={(e) => e.stopPropagation()}>

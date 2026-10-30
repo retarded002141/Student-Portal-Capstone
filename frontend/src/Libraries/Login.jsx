@@ -1,18 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Stylesheets/Login.css";
+import { API_BASE_URL } from "../api/axios";
 
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
 
-  // Core Login States
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
 
-  // Recovery & Auth States ("login" | "loginInvalid" | "forgot" | "loadingToOtp" | "emailConfirmed" | "emailNotFound" | "otp" | "otpInvalid" | "loadingToReset" | "reset" | "loadingToSuccess" | "recovered")
   const [authMode, setAuthMode] = useState("login");
   const [recoveryEmail, setRecoveryEmail] = useState(""); 
   const [targetStudentNumber, setTargetStudentNumber] = useState(""); 
@@ -22,7 +21,6 @@ function Login({ onLoginSuccess }) {
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
-  // Core Login Submit Handler
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     const studentNumber = username.trim();
@@ -36,7 +34,7 @@ function Login({ onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -74,7 +72,6 @@ function Login({ onLoginSuccess }) {
     }
   };
 
-  // Step 1: Query backend to verify email/student number and trigger real Resend OTP
   const handleRequestOtp = async (e) => {
     e.preventDefault();
     const emailToVerify = recoveryEmail.trim();
@@ -87,7 +84,7 @@ function Login({ onLoginSuccess }) {
     setAuthMode("loadingToOtp");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/forgot-password/request", {
+      const response = await fetch(`${API_BASE_URL}/api/student/forgot-password/request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: emailToVerify }),
@@ -114,7 +111,6 @@ function Login({ onLoginSuccess }) {
     }
   };
 
-  // Step 2: Validate code against backend API
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     const code = otpInput.trim();
@@ -127,7 +123,7 @@ function Login({ onLoginSuccess }) {
     setAuthMode("loadingToReset");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/forgot-password/verify-otp", {
+      const response = await fetch(`${API_BASE_URL}/api/student/forgot-password/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -151,13 +147,12 @@ function Login({ onLoginSuccess }) {
     }
   };
 
-  // Resend OTP Handler
   const handleResendOtp = async () => {
     setAuthMode("loadingToOtp");
     setOtpInput("");
 
     try {
-      await fetch("http://127.0.0.1:8000/api/student/forgot-password/request", {
+      await fetch(`${API_BASE_URL}/api/student/forgot-password/request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: recoveryEmail.trim() }),
@@ -172,7 +167,6 @@ function Login({ onLoginSuccess }) {
     }
   };
 
-  // Step 3: Send new password to backend recovery API
   const handleResetPassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -187,7 +181,7 @@ function Login({ onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/forgot-password/reset", {
+      const response = await fetch(`${API_BASE_URL}/api/student/forgot-password/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -296,7 +290,6 @@ function Login({ onLoginSuccess }) {
         </>
       )}
 
-      {/* INVALID LOGIN CREDENTIALS ERROR SCREEN */}
       {!loginSuccess && authMode === "loginInvalid" && (
         <div className="loginLoading">
           <div className="success-checkmark-icon-wrapper" style={{ backgroundColor: "#fef2f2" }}>
@@ -321,7 +314,6 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* PHASE 1: ACCOUNT LOOKUP BY EMAIL OR STUDENT NUMBER */}
       {!loginSuccess && authMode === "forgot" && (
         <>
           <h2 className="authTitle">Account Recovery</h2>
@@ -347,7 +339,6 @@ function Login({ onLoginSuccess }) {
         </>
       )}
 
-      {/* PHASE 1.1: LOADING STATE */}
       {!loginSuccess && authMode === "loadingToOtp" && (
         <div className="loginLoading">
           <div className="loginSpinner"></div>
@@ -356,7 +347,6 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* CASE A: EMAIL EXISTS - CONFIRMATION SCREEN */}
       {!loginSuccess && authMode === "emailConfirmed" && (
         <div className="loginLoading">
           <div className="success-checkmark-icon-wrapper">
@@ -382,7 +372,6 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* CASE B: EMAIL DOES NOT EXIST - ERROR SCREEN */}
       {!loginSuccess && authMode === "emailNotFound" && (
         <div className="loginLoading">
           <div className="success-checkmark-icon-wrapper" style={{ backgroundColor: "#fef2f2" }}>
@@ -407,7 +396,6 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* PHASE 2: ENTER OTP PANEL */}
       {!loginSuccess && authMode === "otp" && (
         <>
           <h2 className="authTitle">Enter Verification Code</h2>
@@ -464,7 +452,6 @@ function Login({ onLoginSuccess }) {
         </>
       )}
 
-      {/* CASE C: INVALID OTP ENTERED */}
       {!loginSuccess && authMode === "otpInvalid" && (
         <div className="loginLoading">
           <div className="success-checkmark-icon-wrapper" style={{ backgroundColor: "#fef2f2" }}>
@@ -492,7 +479,6 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* PHASE 2.5: LOADER INTERMISSION */}
       {!loginSuccess && authMode === "loadingToReset" && (
         <div className="loginLoading">
           <div className="loginSpinner"></div>
@@ -501,7 +487,6 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* PHASE 3: WRITE NEW SECURE PASSWORD */}
       {!loginSuccess && authMode === "reset" && (
         <>
           <h2 className="authTitle">Reset Password</h2>
@@ -542,7 +527,6 @@ function Login({ onLoginSuccess }) {
         </>
       )}
 
-      {/* PHASE 3.5: LOADER INTERMISSION */}
       {!loginSuccess && authMode === "loadingToSuccess" && (
         <div className="loginLoading">
           <div className="loginSpinner"></div>
@@ -551,7 +535,6 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* PHASE 4: SUCCESS CONFIRMATION PANEL */}
       {!loginSuccess && authMode === "recovered" && (
         <div className="loginLoading">
           <div className="success-checkmark-icon-wrapper">

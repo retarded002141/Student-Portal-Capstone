@@ -1,6 +1,6 @@
-// src/Libraries/Records_request.jsx
 import { useEffect, useMemo, useState, useRef } from "react";
 import "../Stylesheets/Records_request.css";
+import { API_BASE_URL } from "../api/axios";
 
 const DEFAULT_SEMESTER_OPTIONS = [
   "2024-2025 1st Semester",
@@ -111,7 +111,7 @@ export default function Records_request() {
 
   const fetchDynamicConfig = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/records/config");
+      const response = await fetch(`${API_BASE_URL}/api/student/records/config`);
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data.documents) && data.documents.length > 0) {
@@ -127,56 +127,53 @@ export default function Records_request() {
   };
 
   const fetchStudentInfo = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "/";
-    return;
-  }
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/student/profile", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      if (response.status === 401) {
-        localStorage.clear();
-        window.location.href = "/";
-      }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/";
       return;
     }
-    
-    setFullName(`${data.first_name || data.firstName || ""} ${data.middle_initial || data.middleInitial ? (data.middle_initial || data.middleInitial) + "." : ""} ${data.last_name || data.lastName || ""}`.trim());
-    setStudentNumber(data.student_number || data.studentNumber || "");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/student/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.clear();
+          window.location.href = "/";
+        }
+        return;
+      }
+      
+      setFullName(`${data.first_name || data.firstName || ""} ${data.middle_initial || data.middleInitial ? (data.middle_initial || data.middleInitial) + "." : ""} ${data.last_name || data.lastName || ""}`.trim());
+      setStudentNumber(data.student_number || data.studentNumber || "");
 
-    // Extract terms directly from where your student grades/schedule dict is stored
-    let activeTerms = [];
+      let activeTerms = [];
 
-    if (data.grades && typeof data.grades === "object") {
-      activeTerms = Object.keys(data.grades);
-    } else if (data.class_schedule && typeof data.class_schedule === "object") {
-      activeTerms = Object.keys(data.class_schedule);
-    } else if (data.schedules && typeof data.schedules === "object") {
-      activeTerms = Object.keys(data.schedules);
-    } else if (Array.isArray(data.enrolled_semesters)) {
-      activeTerms = data.enrolled_semesters;
+      if (data.grades && typeof data.grades === "object") {
+        activeTerms = Object.keys(data.grades);
+      } else if (data.class_schedule && typeof data.class_schedule === "object") {
+        activeTerms = Object.keys(data.class_schedule);
+      } else if (data.schedules && typeof data.schedules === "object") {
+        activeTerms = Object.keys(data.schedules);
+      } else if (Array.isArray(data.enrolled_semesters)) {
+        activeTerms = data.enrolled_semesters;
+      }
+
+      activeTerms = activeTerms.filter(Boolean);
+
+      setSemesterOptions(activeTerms);
+    } catch (error) {
+      console.error("Error fetching student profile:", error);
+      setSemesterOptions([]);
     }
-
-    // Filter out any empty/falsy values
-    activeTerms = activeTerms.filter(Boolean);
-
-    // Set ONLY the terms present in student data
-    setSemesterOptions(activeTerms);
-  } catch (error) {
-    console.error("Error fetching student profile:", error);
-    setSemesterOptions([]);
-  }
-};
+  };
 
   const fetchRecords = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/records", {
+      const response = await fetch(`${API_BASE_URL}/api/student/records`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -257,7 +254,7 @@ export default function Records_request() {
     setShowConfirmModal(false);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/student/records/delete/${targetRequestId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/student/records/delete/${targetRequestId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -310,7 +307,7 @@ export default function Records_request() {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/student/records/create", {
+      const response = await fetch(`${API_BASE_URL}/api/student/records/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -561,7 +558,6 @@ export default function Records_request() {
                     <td><strong>{item.documentType}</strong></td>
                     <td>{item.yearSemester || "N/A"}</td>
                     
-                    {/* TRUNCATED REASON CELL WITH NATIVE HOVER TOOLTIP */}
                     <td 
                       style={{ 
                         maxWidth: "200px", 
@@ -607,7 +603,6 @@ export default function Records_request() {
         </div>
       </section>
 
-      {/* CONFIRMATION MODAL */}
       {showConfirmModal && (
         <div className="records-modal-overlay">
           <div className="records-modal-card">
@@ -637,7 +632,6 @@ export default function Records_request() {
         </div>
       )}
 
-      {/* RESULT MODAL */}
       {showResultModal && (
         <div className="records-modal-overlay">
           <div className="records-modal-card">
