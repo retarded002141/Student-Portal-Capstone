@@ -11,12 +11,14 @@ app = FastAPI(title="Student Portal Backend")
 # Ensure the static directories exist on startup
 os.makedirs("static/avatars", exist_ok=True)
 
+
 # Allowed Origins for CORS
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
+    "https://student-portal-capstone.vercel.app",
     "https://student-portal-capstone-2qp4.vercel.app",
 ]
 
