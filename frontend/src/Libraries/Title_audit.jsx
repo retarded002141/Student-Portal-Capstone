@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "../Stylesheets/Title_audit.css";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 const convertToNumberGrade = (raw) => {
   if (raw === undefined || raw === null || raw === "" || raw === "--") {

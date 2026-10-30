@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import Cropper from "react-easy-crop";
 import "../Stylesheets/Profile.css";
 import Settings from "./Settings.jsx";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 const getCroppedImg = async (imageSrc, pixelCrop) => {
   const image = new Image();

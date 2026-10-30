@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import "../Stylesheets/Records_request.css";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 const DEFAULT_SEMESTER_OPTIONS = [
   "2024-2025 1st Semester",

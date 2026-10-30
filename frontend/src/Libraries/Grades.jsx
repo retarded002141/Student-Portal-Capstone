@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import "../Stylesheets/Grades.css";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 function percentageToNumberGrade(value) {
   if (value === null || value === undefined || value === "" || value === "--") {

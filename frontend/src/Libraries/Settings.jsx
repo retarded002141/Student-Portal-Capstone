@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "../Stylesheets/Settings.css";
 import Modal from "./Modal.jsx";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 export default function Settings() {
   const [form, setForm] = useState({

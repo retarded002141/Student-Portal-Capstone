@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import "../Stylesheets/Navigation.css";
 import iitiLogo from "../assets/iitilogo.png";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

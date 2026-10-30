@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import "../Stylesheets/Modal.css";
-import { API_BASE_URL } from "../api/axios";
 
 export default function Modal({ isOpen, onClose, ariaLabel, children }) {
   useEffect(() => {

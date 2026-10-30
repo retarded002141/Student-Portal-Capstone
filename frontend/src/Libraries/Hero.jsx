@@ -6,7 +6,7 @@ import "../Stylesheets/Hero.css";
 
 import Modal from "./Modal";
 import Login from "./Login";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 function Hero() {
   const [activeModal, setActiveModal] = useState(null);

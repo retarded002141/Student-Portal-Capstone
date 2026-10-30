@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import "../Stylesheets/Class_schedule.css";
-import { API_BASE_URL } from "../api/axios";
+import { API_BASE_URL } from "../axios";
 
 export default function Class_schedule() {
   const [allSchedules, setAllSchedules] = useState({});
