@@ -45,7 +45,7 @@
   margin: 0 0 6px 0;
   font-size: 14.5px;
   line-height: 1.45;
-  font-weight: 600;
+  font-weight: 500;
   color: #ffffff;
 }
 
@@ -68,7 +68,6 @@
 .footer-contact h2 {
   margin: 0 0 14px 0;
   font-size: 15px;
-  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #ffffff;
