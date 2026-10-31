@@ -32,6 +32,14 @@ function Navigation() {
   const closeMenu = () => setIsMenuOpen(false);
   const openMenu = () => setIsMenuOpen(true);
 
+  // Safely hide broken 404 images and show SVG fallback
+  const handleAvatarError = (e) => {
+    e.target.style.display = "none";
+    if (e.target.nextElementSibling) {
+      e.target.nextElementSibling.style.display = "flex";
+    }
+  };
+
   const toggleNotif = (e) => {
     e.stopPropagation();
     setIsProfileOpen(false);
@@ -72,10 +80,8 @@ function Navigation() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Scroll detection logic for mobile view
   useEffect(() => {
     const handleScroll = () => {
-      // Only execute logic on mobile viewport (< 1024px)
       if (window.innerWidth > 1024) {
         setIsMobileHidden(false);
         return;
@@ -83,16 +89,13 @@ function Navigation() {
 
       const currentScrollY = window.scrollY;
 
-      // Keep navbar visible near top edge
       if (currentScrollY <= 20) {
         setIsMobileHidden(false);
       } else if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
-        // Scrolling down -> Hide navbar
         setIsMobileHidden(true);
         setIsNotifOpen(false);
         setIsProfileOpen(false);
       } else if (currentScrollY < lastScrollY.current) {
-        // Scrolling up -> Reveal navbar immediately
         setIsMobileHidden(false);
       }
 
@@ -103,7 +106,7 @@ function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
     if (!isLoggedIn) return;
 
     let isMounted = true;
@@ -157,7 +160,6 @@ useEffect(() => {
 
     fetchHeaderData();
 
-    // Pause polling while either panel is open to prevent UI re-render blinks
     const interval = setInterval(() => {
       if (!isNotifOpen && !isProfileOpen) {
         fetchHeaderData();
@@ -369,16 +371,23 @@ useEffect(() => {
         type="button"
         aria-expanded={isProfileOpen}
       >
-        {avatarUrl ? (
-          <img src={avatarUrl} alt="User Avatar" className="nav-avatar-img" />
-        ) : (
-          <div className="nav-avatar-fallback">
-            <svg xmlns="http://www.w3.org/2000/svg" width="80%" height="80%" viewBox="0 0 24 24">
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path fill="#fff" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4" />
-            </svg>
-          </div>
+        {avatarUrl && (
+          <img 
+            src={avatarUrl} 
+            alt="User Avatar" 
+            className="nav-avatar-img" 
+            onError={handleAvatarError} 
+          />
         )}
+        <div 
+          className="nav-avatar-fallback" 
+          style={{ display: avatarUrl ? "none" : "flex" }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="80%" height="80%" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path fill="#fff" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4" />
+          </svg>
+        </div>
       </button>
 
       {isProfileOpen && (
@@ -386,16 +395,22 @@ useEffect(() => {
           <div className="profile-panel-header">
             <div className="profile-card-user">
               <div className="profile-card-avatar">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Student Avatar" />
-                ) : (
-                  <div className="profile-card-avatar-fallback">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                  </div>
+                {avatarUrl && (
+                  <img 
+                    src={avatarUrl} 
+                    alt="Student Avatar" 
+                    onError={handleAvatarError} 
+                  />
                 )}
+                <div 
+                  className="profile-card-avatar-fallback" 
+                  style={{ display: avatarUrl ? "none" : "flex" }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
               </div>
               <div className="profile-card-details">
                 <div className="profile-card-name-row">

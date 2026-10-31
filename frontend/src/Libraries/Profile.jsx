@@ -327,16 +327,30 @@ export default function Profile() {
           <div className="sidebar-top">
             <div className="avatar-wrapper">
               <div className="avatar">
-                {currentAvatarUrl ? (
-                  <img src={currentAvatarUrl} alt="Student Avatar" className="avatar-img" />
-                ) : (
+                {currentAvatarUrl && (
+                  <img 
+                    src={currentAvatarUrl} 
+                    alt="Student Avatar" 
+                    className="avatar-img" 
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      if (e.target.nextElementSibling) {
+                        e.target.nextElementSibling.style.display = "flex";
+                      }
+                    }}
+                  />
+                )}
+                <div 
+                  className="avatar-fallback" 
+                  style={{ display: currentAvatarUrl ? "none" : "flex" }}
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                       fill="currentColor"
                       d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
                     />
                   </svg>
-                )}
+                </div>
               </div>
 
               <button 
@@ -611,15 +625,29 @@ export default function Profile() {
                   ) : (
                     <div className="modal-avatar-preview">
                       {modalAvatarPreview ? (
-                        <img src={modalAvatarPreview} alt="Preview" className="avatar-img" />
-                      ) : (
+                        <img 
+                          src={modalAvatarPreview} 
+                          alt="Preview" 
+                          className="avatar-img" 
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                            if (e.target.nextElementSibling) {
+                              e.target.nextElementSibling.style.display = "flex";
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="modal-avatar-fallback" 
+                        style={{ display: modalAvatarPreview ? "none" : "flex" }}
+                      >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
                           <path
                             fill="currentColor"
                             d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
                           />
                         </svg>
-                      )}
+                      </div>
                     </div>
                   )}
                 </div>
