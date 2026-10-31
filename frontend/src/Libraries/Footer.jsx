@@ -30,7 +30,7 @@ function Footer() {
           </div>
           
           <div className="footer-orgs">
-            <h2>Student Orgs</h2>
+            <h2>Student Organizations</h2>
             <ul>
               <li><a href="https://www.facebook.com/SSITEBtech" target="_blank" rel="noopener noreferrer">SSITE</a></li>
               <li><a href="https://www.facebook.com/awsbtechccs" target="_blank" rel="noopener noreferrer">AWS BTECH</a></li>
