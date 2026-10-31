@@ -1,14 +1,14 @@
 .footer {
   background: #183a1d;
   color: #ffffff;
-  padding: 50px 24px 24px;
+  padding: 60px 0 24px;
   font-family: Inter, system-ui, -apple-system, sans-serif;
   box-sizing: border-box;
 }
 
-/* Base grid layout for desktop */
+/* Base grid layout matching site container margins */
 .footer-container {
-  max-width: 1200px;
+  width: min(1720px, calc(100% - 160px));
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.4fr 1.2fr 1fr;
@@ -61,6 +61,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  justify-self: center;
 }
 
 .footer-social h2,
@@ -68,6 +69,7 @@
 .footer-contact h2 {
   margin: 0 0 14px 0;
   font-size: 15px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #ffffff;
@@ -99,9 +101,10 @@
   text-decoration: underline;
 }
 
-/* Contact Details */
+/* Contact Details - Aligned flush with the right margin */
 .footer-contact {
   text-align: left;
+  justify-self: end;
 }
 
 .footer-contact p {
@@ -111,9 +114,9 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* Copyright Row */
+/* Copyright Row aligned with main container */
 .footer-bottom {
-  max-width: 1200px;
+  width: min(1720px, calc(100% - 160px));
   margin: 40px auto 0;
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -122,39 +125,50 @@
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* Tablet Layout */
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .footer-container,
+  .footer-bottom {
+    width: calc(100% - 64px);
+  }
+}
+
 @media (max-width: 900px) {
   .footer-container {
     grid-template-columns: 1fr 1fr;
     gap: 36px;
   }
-  
+
   .footer-brand {
     grid-column: span 2;
   }
+
+  .footer-links-wrapper,
+  .footer-contact {
+    justify-self: start;
+  }
 }
 
-/* Mobile Layout */
 @media (max-width: 600px) {
   .footer {
     padding: 40px 20px 20px;
     text-align: center;
   }
 
-  .footer-container {
+  .footer-container,
+  .footer-bottom {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 32px;
   }
 
-  .footer-brand {
+  .footer-brand,
+  .footer-contact {
     align-items: center;
     text-align: center;
-  }
-
-  .footer-contact {
-    text-align: center;
+    justify-self: center;
   }
 
   .footer-links-wrapper {
@@ -162,5 +176,6 @@
     max-width: 340px;
     grid-template-columns: 1fr 1fr;
     justify-items: center;
+    justify-self: center;
   }
 }
