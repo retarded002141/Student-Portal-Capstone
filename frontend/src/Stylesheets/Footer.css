@@ -1,71 +1,77 @@
 .footer {
   background: #183a1d;
   color: #ffffff;
-  padding: 50px 20px 20px;
-  font-family: Inter, system-ui, sans-serif;
-  text-align: center;
+  padding: 50px 24px 24px;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
 }
 
+/* Base grid layout for desktop */
 .footer-container {
-  max-width: 700px;
+  max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 36px;
+  display: grid;
+  grid-template-columns: 1.4fr 1.2fr 1fr;
+  gap: 40px;
+  align-items: start;
 }
 
+/* Brand & Department section */
 .footer-brand {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.footer-brand .footer-logos-row {
+  display: flex;
   align-items: center;
+  gap: 12px;
 }
 
 .footer-logo {
-  height: 80px;
-  margin: 0 6px;
-}
-
-.footer-logo.second {
-  height: 80px;
+  height: 72px;
+  width: auto;
+  object-fit: contain;
 }
 
 .footer-desc-group {
-  margin-top: 14px;
-  max-width: 500px;
+  margin-top: 16px;
+  max-width: 420px;
 }
 
 .footer-dept {
-  margin: 0 0 4px 0;
-  font-size: 14px;
-  line-height: 1.4;
-  opacity: 0.95;
+  margin: 0 0 6px 0;
+  font-size: 14.5px;
+  line-height: 1.45;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .footer-school {
   margin: 0;
-  font-size: 13.5px;
-  line-height: 1.4;
-  opacity: 0.8;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-/* Links & Orgs stacked in a clean grid */
+/* Links & Orgs section */
 .footer-links-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  width: 100%;
-  max-width: 450px;
-  justify-items: center;
+  gap: 24px;
 }
 
 .footer-social h2,
 .footer-orgs h2,
 .footer-contact h2 {
-  margin: 0 0 12px;
-  font-size: 16px;
-  font-weight: 600;
+  margin: 0 0 14px 0;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
 }
 
 .footer-social ul,
@@ -77,47 +83,85 @@
 
 .footer-social li,
 .footer-orgs li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .footer-social a,
 .footer-orgs a {
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-size: 14px;
-  opacity: 0.85;
-  transition: opacity 0.2s;
+  transition: color 0.2s ease;
 }
 
 .footer-social a:hover,
 .footer-orgs a:hover {
-  opacity: 1;
+  color: #ffffff;
   text-decoration: underline;
 }
 
+/* Contact Details */
 .footer-contact {
-  text-align: center;
+  text-align: left;
 }
 
 .footer-contact p {
-  margin: 6px 0;
+  margin: 8px 0;
   font-size: 14px;
-  opacity: 0.85;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
 }
 
+/* Copyright Row */
 .footer-bottom {
-  max-width: 700px;
-  margin: 36px auto 0;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 1200px;
+  margin: 40px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
   text-align: center;
   font-size: 13px;
-  opacity: 0.7;
+  color: rgba(255, 255, 255, 0.65);
 }
 
-@media (max-width: 500px) {
-  .footer-links-wrapper {
+/* Tablet Layout */
+@media (max-width: 900px) {
+  .footer-container {
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 36px;
+  }
+  
+  .footer-brand {
+    grid-column: span 2;
+  }
+}
+
+/* Mobile Layout */
+@media (max-width: 600px) {
+  .footer {
+    padding: 40px 20px 20px;
+    text-align: center;
+  }
+
+  .footer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .footer-brand {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-contact {
+    text-align: center;
+  }
+
+  .footer-links-wrapper {
+    width: 100%;
+    max-width: 340px;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
   }
 }
