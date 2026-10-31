@@ -10,6 +10,11 @@ function Navigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showNavLogoutConfirm, setShowNavLogoutConfirm] = useState(false); 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  // Mobile Scroll State
+  const [isMobileHidden, setIsMobileHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -66,6 +71,37 @@ function Navigation() {
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Scroll detection logic for mobile view
+  useEffect(() => {
+    const handleScroll = () => {
+      // Only execute logic on mobile viewport (< 1024px)
+      if (window.innerWidth > 1024) {
+        setIsMobileHidden(false);
+        return;
+      }
+
+      const currentScrollY = window.scrollY;
+
+      // Keep navbar visible near top edge
+      if (currentScrollY <= 20) {
+        setIsMobileHidden(false);
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
+        // Scrolling down -> Hide navbar
+        setIsMobileHidden(true);
+        setIsNotifOpen(false);
+        setIsProfileOpen(false);
+      } else if (currentScrollY < lastScrollY.current) {
+        // Scrolling up -> Reveal navbar immediately
+        setIsMobileHidden(false);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -159,7 +195,7 @@ function Navigation() {
     if (!notif.read) {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch(`${API_BASE_URL}/api/student/notifications/read/${notifId}${notifId}`, {
+        const res = await fetch(`${API_BASE_URL}/api/student/notifications/read/${notifId}`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -419,7 +455,7 @@ function Navigation() {
   );
 
   return (
-    <nav className="navigation">
+    <nav className={`navigation ${isMobileHidden ? "mobile-nav-hidden" : ""}`}>
       <div className="mobile-nav">
         <button className="hamburger" aria-label="Open menu" onClick={openMenu} type="button">
           <span /><span /><span />

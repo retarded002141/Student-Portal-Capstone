@@ -3,10 +3,12 @@
   background: #ffffff;
   border-bottom: 1px solid #e6e6e6;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  position: sticky; /* Keeps the navbar pinned to the top of the viewport */
-  top: 0;           /* Sets the pinning threshold at the very top edge */
-  z-index: 1000;    /* Elevated to ensure dropdowns and panels never lose tap priority */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   box-sizing: border-box;
+  /* Add smooth transition for scroll hide/show */
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* =======================================================
@@ -828,6 +830,12 @@
 @keyframes popOver {
   from { opacity: 0; transform: scale(0.96) translateY(-4px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 1024px) {
+  .navigation.mobile-nav-hidden {
+    transform: translateY(-100%);
+  }
 }
 
 @keyframes fadeOverlay {
