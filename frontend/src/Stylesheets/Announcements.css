@@ -473,3 +473,42 @@
   color: #334155;
   white-space: pre-line;
 }
+
+/* Mobile view horizontal swipe layout (768px and down) */
+@media (max-width: 768px) {
+  .announcements-page {
+    padding: 24px 16px 40px;
+  }
+
+  /* Hide navigation arrows completely on mobile view */
+  .carousel-nav {
+    display: none !important;
+  }
+
+  /* Enable native horizontal swipe with scroll snapping */
+  .carousel-viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+    padding: 12px 0;
+  }
+
+  .carousel-viewport::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+  }
+
+  .carousel-track {
+    transform: none !important;
+    display: flex;
+    gap: 12px;
+  }
+
+  /* 85% width allows adjacent card 'cheeks' to peek through on screen edges */
+  .carousel-card {
+    flex: 0 0 85% !important;
+    scroll-snap-align: center;
+    padding: 0;
+  }
+}

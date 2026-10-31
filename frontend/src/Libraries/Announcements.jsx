@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "../Stylesheets/Announcements.css";
 import { API_BASE_URL as BASE } from "../axios";
 
@@ -107,6 +107,7 @@ function ViewModal({ open, item, onClose }) {
 function AnnouncementCarousel({ items, loading, onOpen }) {
   const [index, setIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(3);
+  const viewportRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -135,6 +136,16 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
   useEffect(() => {
     setIndex((i) => Math.min(i, maxIndex));
   }, [maxIndex]);
+
+  // Sync scroll dots on mobile touch swipe
+  const handleScroll = () => {
+    if (window.innerWidth <= 768 && viewportRef.current) {
+      const scrollLeft = viewportRef.current.scrollLeft;
+      const width = viewportRef.current.offsetWidth * 0.85;
+      const newIndex = Math.round(scrollLeft / width);
+      setIndex(Math.min(newIndex, items.length - 1));
+    }
+  };
 
   if (loading) {
     return (
@@ -176,15 +187,22 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
           ❮
         </button>
 
-        <div className="carousel-viewport">
+        <div 
+          className="carousel-viewport" 
+          ref={viewportRef}
+          onScroll={handleScroll}
+        >
           <div
             className="carousel-track"
-            style={{ transform: `translateX(-${index * (100 / visibleCards)}%)` }}
+            style={
+              window.innerWidth > 768
+                ? { transform: `translateX(-${index * (100 / visibleCards)}%)` }
+                : undefined
+            }
           >
             {items.map((item) => (
               <div
                 className="carousel-card"
-                style={{ flex: `0 0 ${100 / visibleCards}%` }}
                 key={item.id || item._id}
               >
                 <article
@@ -236,13 +254,19 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
         </button>
       </div>
 
-      {maxIndex > 0 && (
+      {(items.length > 1) && (
         <div className="annc-dots">
-          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+          {items.slice(0, window.innerWidth <= 768 ? items.length : maxIndex + 1).map((_, i) => (
             <button
               key={i}
               className={`annc-dot ${i === index ? "active" : ""}`}
-              onClick={() => setIndex(i)}
+              onClick={() => {
+                setIndex(i);
+                if (window.innerWidth <= 768 && viewportRef.current) {
+                  const width = viewportRef.current.offsetWidth * 0.85;
+                  viewportRef.current.scrollTo({ left: i * width, behavior: "smooth" });
+                }
+              }}
               aria-label={`Go to slide ${i + 1}`}
               type="button"
             />
@@ -330,5 +354,4 @@ export default function Announcements() {
       <ViewModal open={viewOpen} item={selected} onClose={closeView} />
     </div>
   );
-} 
-
+}
