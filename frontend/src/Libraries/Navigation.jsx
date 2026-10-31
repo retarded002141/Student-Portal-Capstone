@@ -103,7 +103,7 @@ function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     if (!isLoggedIn) return;
 
     let isMounted = true;
@@ -136,7 +136,12 @@ function Navigation() {
         });
         if (profileRes.ok && isMounted) {
           const data = await profileRes.json();
-          setStudentInfo(data);
+          setStudentInfo((prev) => {
+            if (JSON.stringify(prev) !== JSON.stringify(data)) {
+              return data;
+            }
+            return prev;
+          });
 
           if (data.avatar_url) {
             const fullUrl = `${API_BASE_URL}${data.avatar_url}`;
@@ -152,8 +157,9 @@ function Navigation() {
 
     fetchHeaderData();
 
+    // Pause polling while either panel is open to prevent UI re-render blinks
     const interval = setInterval(() => {
-      if (!isNotifOpen) {
+      if (!isNotifOpen && !isProfileOpen) {
         fetchHeaderData();
       }
     }, 5000);
@@ -166,7 +172,7 @@ function Navigation() {
       clearInterval(interval);
       window.removeEventListener("layoutAdjust", handleAvatarUpdate);
     };
-  }, [isLoggedIn, isNotifOpen]);
+  }, [isLoggedIn, isNotifOpen, isProfileOpen]);
 
   const markAllAsRead = async (e) => {
     e.stopPropagation();
