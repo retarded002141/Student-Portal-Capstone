@@ -1,11 +1,9 @@
 import "../Stylesheets/Mission_vision.css";
-import { API_BASE_URL } from "../api/axios";
 
 function Mission_vision() {
   return (
     <section className="mv-section">
       <div className="mv-container">
-      
         <div className="mv-grid">
           <article className="mv-block reveal-on-scroll">
             <h3>Mission</h3>
