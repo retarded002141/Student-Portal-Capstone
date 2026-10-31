@@ -485,30 +485,33 @@
     display: none !important;
   }
 
-  /* Enable native horizontal swipe with scroll snapping */
+  /* Center-aligned scroll viewport */
   .carousel-viewport {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
+    scrollbar-width: none;
     padding: 12px 0;
   }
 
   .carousel-viewport::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
+    display: none;
   }
 
   .carousel-track {
     transform: none !important;
     display: flex;
-    gap: 12px;
+    gap: 16px;
+    /* Add padding so the first & last cards center cleanly */
+    padding: 0 7.5%;
   }
 
-  /* 85% width allows adjacent card 'cheeks' to peek through on screen edges */
+  /* 85% width card snapped to center */
   .carousel-card {
     flex: 0 0 85% !important;
     scroll-snap-align: center;
+    scroll-snap-stop: always;
     padding: 0;
   }
 }
