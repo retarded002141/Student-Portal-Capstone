@@ -330,4 +330,5 @@ export default function Announcements() {
       <ViewModal open={viewOpen} item={selected} onClose={closeView} />
     </div>
   );
-}
+} 
+
