@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../Stylesheets/Announcements.css";
-import { API_BASE_URL } from "../axios";
+import { API_BASE_URL as BASE } from "../axios";
 
 const API_BASE_URL = `${BASE}/api/student/announcements/all`;
 
