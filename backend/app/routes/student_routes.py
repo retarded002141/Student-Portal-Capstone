@@ -193,38 +193,38 @@ async def get_student_enrolled_terms(authorization: str = Header(None)):
     student_num = get_student_number_from_token(authorization)
     terms_set = set()
 
-    # Query historical terms from studentarchive collection
-    archive_cursor = database["studentarchive"].find({
+    student_query = {
         "$or": [
             {"studentNumber": str(student_num)},
-            {"student_number": str(student_num)}
+            {"student_number": str(student_num)},
+            {"studentNumber": int(student_num) if student_num.isdigit() else student_num},
+            {"student_number": int(student_num) if student_num.isdigit() else student_num}
         ]
-    })
-    
+    }
+
+    # 1. Query historical terms from studentarchive collection
+    archive_cursor = database["studentarchive"].find(student_query)
     async for rec in archive_cursor:
         sy = rec.get("schoolYear") or rec.get("school_year")
         sem = rec.get("semester")
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # Query active term from students collection
-    student = await students_collection.find_one({
-        "$or": [
-            {"studentNumber": str(student_num)},
-            {"student_number": str(student_num)}
-        ]
-    })
-
+    # 2. Query active term from students collection
+    student = await students_collection.find_one(student_query)
     if student:
         sy = student.get("schoolYear") or student.get("school_year")
         sem = student.get("semester")
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # Fallback to grades collection if archive is empty
+    # 3. Fallback to grades collection if both archive and active student fields are empty
     if not terms_set:
         student_grades = await grades_collection.find({
-            "$or": [{"student_id": str(student_num)}, {"student_id": int(student_num) if student_num.isdigit() else student_num}]
+            "$or": [
+                {"student_id": str(student_num)},
+                {"student_id": int(student_num) if student_num.isdigit() else student_num}
+            ]
         }).to_list(length=100)
         
         for g in student_grades:
