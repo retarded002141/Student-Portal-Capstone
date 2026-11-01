@@ -186,14 +186,14 @@ async def get_student_profile(authorization: str = Header(None)):
 
 
 # =======================================================
-# 1.1 ENROLLED TERMS (STUDENT ARCHIVE & ACTIVE)
+# 1.1 ENROLLED TERMS (STUDENT ARCHIVE, ACTIVE & SCHEDULES FALLBACK)
 # =======================================================
 @router.get("/terms")
 async def get_student_enrolled_terms(authorization: str = Header(None)):
     student_num = get_student_number_from_token(authorization)
     terms_set = set()
 
-    # Query historical terms from studentarchive collection
+    # 1. Query historical terms from studentarchive collection
     archive_cursor = database["studentarchive"].find({
         "$or": [
             {"studentNumber": str(student_num)},
@@ -207,11 +207,12 @@ async def get_student_enrolled_terms(authorization: str = Header(None)):
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # Query active term from students collection
+    # 2. Query active term from students collection
     student = await students_collection.find_one({
         "$or": [
             {"studentNumber": str(student_num)},
-            {"student_number": str(student_num)}
+            {"student_number": str(student_num)},
+            {"studentNumber": int(student_num) if student_num.isdigit() else student_num}
         ]
     })
 
@@ -221,7 +222,29 @@ async def get_student_enrolled_terms(authorization: str = Header(None)):
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # Fallback to grades collection if archive is empty
+    # 3. Query active schedule if terms_set is still empty
+    if not terms_set and student:
+        s_year = str(student.get("year", "1"))
+        s_sec = str(student.get("section", "A")).replace("BSIT-", "").replace("BSIT", "").strip()
+        s_sem = str(student.get("semester", "1st")).strip()
+        s_sy = str(student.get("schoolYear", "2026-2027")).strip()
+
+        matched_sched = await schedules_collection.find_one({
+            "year": s_year,
+            "semester": {"$regex": f"^{s_sem}", "$options": "i"},
+            "$or": [
+                {"section": student.get("section", "A")},
+                {"section": s_sec},
+                {"section": f"BSIT-{s_sec}"}
+            ]
+        })
+
+        if matched_sched:
+            sched_sy = matched_sched.get("academicYear") or matched_sched.get("schoolYear") or s_sy
+            sched_sem = matched_sched.get("semester") or s_sem
+            terms_set.add(format_term_label(sched_sy, sched_sem))
+
+    # 4. Fallback to grades collection
     if not terms_set:
         student_grades = await grades_collection.find({
             "$or": [{"student_id": str(student_num)}, {"student_id": int(student_num) if student_num.isdigit() else student_num}]
