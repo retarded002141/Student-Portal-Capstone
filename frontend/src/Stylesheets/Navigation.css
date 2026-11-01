@@ -642,9 +642,10 @@
    MOBILE / TABLET STYLING OVERRIDES
 ======================================================= */
 .mobile-nav {
-  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 1001;
 }
-
 .hamburger {
   width: 42px;
   height: 42px;
@@ -743,21 +744,26 @@
 .mobileMenuOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35);
-  z-index: 120;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height fix for mobile browsers */
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
   display: flex;
-  animation: fadeOverlay 0.25s ease-out forwards;
+  animation: fadeOverlay 0.2s ease-out forwards;
 }
 
 .mobileMenu {
-  width: min(82vw, 320px);
-  height: 100vh;
+  width: min(80vw, 300px);
+  height: 100%;
   background: #ffffff;
   box-shadow: 10px 0 30px rgba(0, 0, 0, 0.18);
-  padding: 18px 16px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow-y: auto; /* Enables smooth scrolling if links overflow screen height */
   animation: slideMenu 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -804,18 +810,19 @@
 .mobileMenuLinks {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 18px;
+  gap: 6px;
+  padding-top: 14px;
 }
 
 .m-link {
   text-decoration: none;
   color: #374151;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  padding: 14px 14px;
-  border-radius: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  display: block;
 }
 
 .m-link:hover,

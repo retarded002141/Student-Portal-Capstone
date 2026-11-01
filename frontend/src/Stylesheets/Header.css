@@ -20,8 +20,9 @@ body {
 .iitiimg { height: 150px; object-fit: contain; }
 .header-text { color: white; font-size: 25px; font-weight: bold; align-content: center; text-align: right; line-height: 1.2; text-transform: uppercase; max-width: 700px; }
 
-@media (max-width: 768px) {
+/* Header.css */
+@media (max-width: 1024px) {
   .header {
-    display: none !important; /* Kept fully matching your targeted design constraint */
+    display: none !important;
   }
 }
