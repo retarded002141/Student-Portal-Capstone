@@ -186,7 +186,7 @@ async def get_student_profile(authorization: str = Header(None)):
 
 
 # =======================================================
-# 1.1 ENROLLED TERMS (STUDENT ARCHIVE & ACTIVE)
+# 1.1 ENROLLED TERMS (FAST AGGREGATION)
 # =======================================================
 @router.get("/terms")
 async def get_student_enrolled_terms(authorization: str = Header(None)):
@@ -197,45 +197,35 @@ async def get_student_enrolled_terms(authorization: str = Header(None)):
         "$or": [
             {"studentNumber": str(student_num)},
             {"student_number": str(student_num)},
-            {"studentNumber": int(student_num) if student_num.isdigit() else student_num},
-            {"student_number": int(student_num) if student_num.isdigit() else student_num}
+            {"studentNumber": int(student_num) if student_num.isdigit() else student_num}
         ]
     }
 
-    # 1. Query historical terms from studentarchive collection
-    archive_cursor = database["studentarchive"].find(student_query)
-    async for rec in archive_cursor:
+    # Fetch archive documents with field projections (only retrieve schoolYear and semester)
+    archive_records = await database["studentarchive"].find(
+        student_query,
+        {"schoolYear": 1, "school_year": 1, "semester": 1}
+    ).to_list(length=50)
+
+    for rec in archive_records:
         sy = rec.get("schoolYear") or rec.get("school_year")
         sem = rec.get("semester")
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # 2. Query active term from students collection
-    student = await students_collection.find_one(student_query)
+    # Query active term from students collection
+    student = await students_collection.find_one(
+        student_query,
+        {"schoolYear": 1, "school_year": 1, "semester": 1}
+    )
     if student:
         sy = student.get("schoolYear") or student.get("school_year")
         sem = student.get("semester")
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # 3. Fallback to grades collection if both archive and active student fields are empty
-    if not terms_set:
-        student_grades = await grades_collection.find({
-            "$or": [
-                {"student_id": str(student_num)},
-                {"student_id": int(student_num) if student_num.isdigit() else student_num}
-            ]
-        }).to_list(length=100)
-        
-        for g in student_grades:
-            raw_sy = g.get("academic_year") or g.get("schoolYear") or g.get("academicYear")
-            raw_sem = g.get("semester")
-            if raw_sy and raw_sem:
-                terms_set.add(format_term_label(raw_sy, raw_sem))
-
     sorted_terms = sorted(list(terms_set), reverse=True)
     return {"terms": sorted_terms}
-
 
 # =======================================================
 # 2. CLASS SCHEDULE

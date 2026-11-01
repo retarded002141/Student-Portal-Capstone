@@ -165,8 +165,9 @@ function Navigation() {
       if (!isNotifOpen && !isProfileOpen) {
         fetchHeaderData();
       }
-    }, 5000);
+    }, 30000); // Changed polling frequency from 5000ms to 30000ms
 
+    
     const handleAvatarUpdate = () => fetchHeaderData();
     window.addEventListener("layoutAdjust", handleAvatarUpdate);
 
