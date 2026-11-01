@@ -21,7 +21,6 @@ from app.utils.security import verify_password, hash_password
 from app.utils.email_utils import send_otp_email
 
 router = APIRouter()
-UPLOAD_DIR = "static/avatars"
 
 
 def get_student_number_from_token(authorization: str):
@@ -146,7 +145,7 @@ async def get_student_profile(authorization: str = Header(None)):
         "section": student.get("section", "A"),
         "status": student.get("status", "Regular"),
         "email": student.get("email", ""),
-        "avatar_url": student.get("avatar_url"),  # Now returns Base64 data URI string or None
+        "avatar_url": student.get("avatar_url"),
         "personal_information": {
             "student_name": full_name,
             "civil_status": student.get("civilStatus", "Single"),
@@ -184,6 +183,59 @@ async def get_student_profile(authorization: str = Header(None)):
             "college_graduated": str(student.get("collegeYear") or "Pending")
         }
     }
+
+
+# =======================================================
+# 1.1 ENROLLED TERMS (STUDENT ARCHIVE & ACTIVE)
+# =======================================================
+@router.get("/terms")
+async def get_student_enrolled_terms(authorization: str = Header(None)):
+    student_num = get_student_number_from_token(authorization)
+    terms_set = set()
+
+    # Query historical terms from studentarchive collection
+    archive_cursor = database["studentarchive"].find({
+        "$or": [
+            {"studentNumber": str(student_num)},
+            {"student_number": str(student_num)}
+        ]
+    })
+    
+    async for rec in archive_cursor:
+        sy = rec.get("schoolYear") or rec.get("school_year")
+        sem = rec.get("semester")
+        if sy and sem:
+            terms_set.add(format_term_label(sy, sem))
+
+    # Query active term from students collection
+    student = await students_collection.find_one({
+        "$or": [
+            {"studentNumber": str(student_num)},
+            {"student_number": str(student_num)}
+        ]
+    })
+
+    if student:
+        sy = student.get("schoolYear") or student.get("school_year")
+        sem = student.get("semester")
+        if sy and sem:
+            terms_set.add(format_term_label(sy, sem))
+
+    # Fallback to grades collection if archive is empty
+    if not terms_set:
+        student_grades = await grades_collection.find({
+            "$or": [{"student_id": str(student_num)}, {"student_id": int(student_num) if student_num.isdigit() else student_num}]
+        }).to_list(length=100)
+        
+        for g in student_grades:
+            raw_sy = g.get("academic_year") or g.get("schoolYear") or g.get("academicYear")
+            raw_sem = g.get("semester")
+            if raw_sy and raw_sem:
+                terms_set.add(format_term_label(raw_sy, raw_sem))
+
+    sorted_terms = sorted(list(terms_set), reverse=True)
+    return {"terms": sorted_terms}
+
 
 # =======================================================
 # 2. CLASS SCHEDULE
@@ -253,7 +305,6 @@ async def get_student_schedule(authorization: str = Header(None)):
             "subjects": subject_rows
         }
 
-    # Query active schedules matching section & 1st semester flexibly
     if not schedules_response:
         clean_sec = student_section.replace("BSIT-", "").replace("BSIT", "").strip()
         query_schedule = await schedules_collection.find_one({
@@ -797,7 +848,6 @@ async def upload_avatar(
     if not base64_image:
         raise HTTPException(status_code=400, detail="Missing avatar image data.")
 
-    # Save permanent Base64 string into MongoDB students collection
     await students_collection.update_one(
         {"$or": [{"studentNumber": str(student_num)}, {"student_number": str(student_num)}]},
         {"$set": {"avatar_url": base64_image}}
@@ -811,16 +861,6 @@ async def remove_avatar(authorization: str = Header(None)):
     student_num = get_student_number_from_token(authorization)
     await students_collection.update_one(
         {"$or": [{"studentNumber": str(student_num)}, {"student_number": str(student_num)}]},
-        {"$set": {"avatar_url": None}}
-    )
-    return {"message": "Avatar removed successfully", "avatar_url": None}
-
-
-@router.post("/profile/avatar/remove")
-async def remove_avatar(authorization: str = Header(None)):
-    student_num = get_student_number_from_token(authorization)
-    await students_collection.update_one(
-        {"studentNumber": str(student_num)},
         {"$set": {"avatar_url": None}}
     )
     return {"message": "Avatar removed successfully", "avatar_url": None}

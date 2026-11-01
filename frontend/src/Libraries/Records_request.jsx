@@ -2,13 +2,6 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import "../Stylesheets/Records_request.css";
 import { API_BASE_URL } from "../axios";
 
-const DEFAULT_SEMESTER_OPTIONS = [
-  "2024-2025 1st Semester",
-  "2024-2025 2nd Semester",
-  "2023-2024 1st Semester",
-  "2023-2024 2nd Semester",
-];
-
 const DEFAULT_DOCUMENTS = [
   "Certificate of Registration (COR)",
   "Certificate of Grades (COG)",
@@ -34,7 +27,7 @@ export default function Records_request() {
   const [customReason, setCustomReason] = useState("");
   
   const [documentOptions, setDocumentOptions] = useState(DEFAULT_DOCUMENTS);
-  const [semesterOptions, setSemesterOptions] = useState(DEFAULT_SEMESTER_OPTIONS);
+  const [semesterOptions, setSemesterOptions] = useState([]);
   const [commonReasons, setCommonReasons] = useState(DEFAULT_COMMON_REASONS);
   
   const [history, setHistory] = useState([]);
@@ -78,7 +71,12 @@ export default function Records_request() {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        await Promise.all([fetchStudentInfo(), fetchRecords(), fetchDynamicConfig()]);
+        await Promise.all([
+          fetchStudentInfo(),
+          fetchRecords(),
+          fetchDynamicConfig(),
+          fetchEnrolledTerms()
+        ]);
       } catch (err) {
         console.error(err);
       } finally {
@@ -126,6 +124,24 @@ export default function Records_request() {
     }
   };
 
+  const fetchEnrolledTerms = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/student/terms`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data.terms)) {
+          setSemesterOptions(data.terms);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load enrolled terms:", err);
+    }
+  };
+
   const fetchStudentInfo = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -147,25 +163,8 @@ export default function Records_request() {
       
       setFullName(`${data.first_name || data.firstName || ""} ${data.middle_initial || data.middleInitial ? (data.middle_initial || data.middleInitial) + "." : ""} ${data.last_name || data.lastName || ""}`.trim());
       setStudentNumber(data.student_number || data.studentNumber || "");
-
-      let activeTerms = [];
-
-      if (data.grades && typeof data.grades === "object") {
-        activeTerms = Object.keys(data.grades);
-      } else if (data.class_schedule && typeof data.class_schedule === "object") {
-        activeTerms = Object.keys(data.class_schedule);
-      } else if (data.schedules && typeof data.schedules === "object") {
-        activeTerms = Object.keys(data.schedules);
-      } else if (Array.isArray(data.enrolled_semesters)) {
-        activeTerms = data.enrolled_semesters;
-      }
-
-      activeTerms = activeTerms.filter(Boolean);
-
-      setSemesterOptions(activeTerms);
     } catch (error) {
       console.error("Error fetching student profile:", error);
-      setSemesterOptions([]);
     }
   };
 
@@ -433,15 +432,21 @@ export default function Records_request() {
                     </div>
                     {isSemDropdownOpen && (
                       <div className="custom-dropdown-options-list">
-                        {semesterOptions.map((semester) => (
-                          <div 
-                            key={semester} 
-                            className="custom-option" 
-                            onClick={() => handleSelectSemester(semester)}
-                          >
-                            {semester}
+                        {semesterOptions.length > 0 ? (
+                          semesterOptions.map((semester) => (
+                            <div 
+                              key={semester} 
+                              className="custom-option" 
+                              onClick={() => handleSelectSemester(semester)}
+                            >
+                              {semester}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="custom-option" style={{ color: "#9ca3af", cursor: "default" }}>
+                            No enrolled terms found
                           </div>
-                        ))}
+                        )}
                       </div>
                     )}
                   </div>
