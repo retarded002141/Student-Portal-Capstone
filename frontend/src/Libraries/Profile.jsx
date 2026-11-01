@@ -34,15 +34,7 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
     pixelCrop.height
   );
 
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        reject(new Error("Canvas is empty"));
-        return;
-      }
-      resolve(blob);
-    }, "image/jpeg");
-  });
+  return canvas.toDataURL("image/jpeg", 0.85);
 };
 
 export default function Profile() {
@@ -226,16 +218,15 @@ export default function Profile() {
           return;
         }
       } else if (tempFile && croppedAreaPixels) {
-        const croppedImageBlob = await getCroppedImg(tempPreview, croppedAreaPixels);
-        const formData = new FormData();
-        formData.append("avatar", croppedImageBlob, "avatar.jpg");
+        const base64Data = await getCroppedImg(tempPreview, croppedAreaPixels);
 
         const response = await fetch(`${API_BASE_URL}/api/student/profile/avatar`, {
           method: "POST",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: formData,
+          body: JSON.stringify({ avatar_base64: base64Data }),
         });
 
         if (!response.ok) {
@@ -260,7 +251,7 @@ export default function Profile() {
       setTimeout(() => {
         setShowAvatarModal(false);
         window.location.reload();
-      }, 3000);
+      }, 1500);
 
     } catch (error) {
       alert("Error connecting to server while saving image.");
@@ -307,7 +298,7 @@ export default function Profile() {
   }
 
   const currentAvatarUrl = student.avatar_url
-    ? `${API_BASE_URL}${student.avatar_url}?t=${Date.now()}`
+    ? (student.avatar_url.startsWith("data:") ? student.avatar_url : `${API_BASE_URL}${student.avatar_url}`)
     : null;
 
   let modalAvatarPreview = currentAvatarUrl;

@@ -32,7 +32,6 @@ function Navigation() {
   const closeMenu = () => setIsMenuOpen(false);
   const openMenu = () => setIsMenuOpen(true);
 
-  // Safely hide broken 404 images and show SVG fallback
   const handleAvatarError = (e) => {
     e.target.style.display = "none";
     if (e.target.nextElementSibling) {
@@ -147,8 +146,10 @@ function Navigation() {
           });
 
           if (data.avatar_url) {
-            const fullUrl = `${API_BASE_URL}${data.avatar_url}`;
-            setAvatarUrl((prev) => (prev?.split("?")[0] === fullUrl ? prev : fullUrl));
+            const fullUrl = data.avatar_url.startsWith("data:")
+              ? data.avatar_url
+              : `${API_BASE_URL}${data.avatar_url}`;
+            setAvatarUrl(fullUrl);
           } else {
             setAvatarUrl(null);
           }

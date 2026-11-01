@@ -146,7 +146,7 @@ async def get_student_profile(authorization: str = Header(None)):
         "section": student.get("section", "A"),
         "status": student.get("status", "Regular"),
         "email": student.get("email", ""),
-        "avatar_url": student.get("avatar_url"),
+        "avatar_url": student.get("avatar_url"),  # Now returns Base64 data URI string or None
         "personal_information": {
             "student_name": full_name,
             "civil_status": student.get("civilStatus", "Single"),
@@ -184,7 +184,6 @@ async def get_student_profile(authorization: str = Header(None)):
             "college_graduated": str(student.get("collegeYear") or "Pending")
         }
     }
-
 
 # =======================================================
 # 2. CLASS SCHEDULE
@@ -789,25 +788,32 @@ async def mark_single_notification_read(
 # =======================================================
 @router.post("/profile/avatar")
 async def upload_avatar(
-    avatar: UploadFile = File(...),
+    payload: dict = Body(...),
     authorization: str = Header(None)
 ):
     student_num = get_student_number_from_token(authorization)
-    file_ext = os.path.splitext(avatar.filename)[1].lower()
-    filename = f"student_{student_num}{file_ext}"
-    file_path = os.path.join(UPLOAD_DIR, filename)
+    base64_image = payload.get("avatar_base64")
 
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(avatar.file, buffer)
+    if not base64_image:
+        raise HTTPException(status_code=400, detail="Missing avatar image data.")
 
-    db_path = f"/static/avatars/{filename}"
+    # Save permanent Base64 string into MongoDB students collection
     await students_collection.update_one(
-        {"studentNumber": str(student_num)},
-        {"$set": {"avatar_url": db_path}}
+        {"$or": [{"studentNumber": str(student_num)}, {"student_number": str(student_num)}]},
+        {"$set": {"avatar_url": base64_image}}
     )
 
-    return {"message": "Avatar updated successfully", "avatar_url": db_path}
+    return {"message": "Avatar updated successfully", "avatar_url": base64_image}
+
+
+@router.post("/profile/avatar/remove")
+async def remove_avatar(authorization: str = Header(None)):
+    student_num = get_student_number_from_token(authorization)
+    await students_collection.update_one(
+        {"$or": [{"studentNumber": str(student_num)}, {"student_number": str(student_num)}]},
+        {"$set": {"avatar_url": None}}
+    )
+    return {"message": "Avatar removed successfully", "avatar_url": None}
 
 
 @router.post("/profile/avatar/remove")
