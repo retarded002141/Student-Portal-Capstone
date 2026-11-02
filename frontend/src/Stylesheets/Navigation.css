@@ -642,10 +642,12 @@
    MOBILE / TABLET STYLING OVERRIDES
 ======================================================= */
 .mobile-nav {
+  display: none; /* Hide on desktop by default */
   position: sticky;
   top: 0;
   z-index: 1001;
 }
+
 .hamburger {
   width: 42px;
   height: 42px;
