@@ -580,17 +580,22 @@ function Navigation() {
               <NavLink to="/Title_audit" onClick={closeMenu} className={({ isActive }) => `m-link ${isActive ? "active" : ""}`}>Title Audit</NavLink>
               <NavLink to="/Records_request" onClick={closeMenu} className={({ isActive }) => `m-link ${isActive ? "active" : ""}`}>Records Request</NavLink>
               {isLoggedIn ? (
-                <button className="disabled-nav-btn-mobile" type="button">Evaluation</button>
+                <li className="nav-list-item">
+                  <NavLink to="/Evaluation" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+                    Evaluation
+                  </NavLink>
+                </li>
               ) : (
-                <a 
-                  href="https://btech-admission.vercel.app" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  onClick={closeMenu} 
-                  className="m-link"
-                >
-                  Admission
-                </a>
+                <li className="nav-list-item">
+                  <a 
+                    href="https://btech-admission.vercel.app" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="nav-item"
+                  >
+                    Admission
+                  </a>
+                </li>
               )}
             </div>
           </aside>
