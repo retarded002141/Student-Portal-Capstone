@@ -529,7 +529,7 @@ function Navigation() {
           </li>
           {isLoggedIn ? (
             <li className="nav-list-item">
-              <button className="disabled-nav-btn" disabled type="button">Evaluation</button>
+              <button className="disabled-nav-btn" type="button">Evaluation</button>
             </li>
           ) : (
             <li className="nav-list-item">
