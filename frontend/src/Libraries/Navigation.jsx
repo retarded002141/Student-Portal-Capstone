@@ -580,7 +580,7 @@ function Navigation() {
               <NavLink to="/Title_audit" onClick={closeMenu} className={({ isActive }) => `m-link ${isActive ? "active" : ""}`}>Title Audit</NavLink>
               <NavLink to="/Records_request" onClick={closeMenu} className={({ isActive }) => `m-link ${isActive ? "active" : ""}`}>Records Request</NavLink>
               {isLoggedIn ? (
-                <button className="disabled-nav-btn-mobile" disabled type="button">Evaluation</button>
+                <button className="disabled-nav-btn-mobile" type="button">Evaluation</button>
               ) : (
                 <a 
                   href="https://btech-admission.vercel.app" 
