@@ -4,6 +4,9 @@ import "../Stylesheets/Navigation.css";
 import iitiLogo from "../assets/iitilogo.png";
 import { API_BASE_URL } from "../axios";
 
+const EVAL_URL = "https://faculty-evaluation-iiti.vercel.app";
+const EVAL_API = "https://faculty-evaluation-jau8.onrender.com/api";
+
 function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -114,32 +117,9 @@ function Navigation() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      try {
-        const notifRes = await fetch(`${API_BASE_URL}/api/student/notifications`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+      let currentStudentNum = localStorage.getItem("student_number");
 
-        // Auto logout if token expired
-        if (notifRes.status === 401) {
-          localStorage.clear();
-          window.location.href = "/";
-          return;
-        }
-
-        if (notifRes.ok && isMounted) {
-          const data = await notifRes.json();
-          const incoming = data.notifications || [];
-          setNotifications((prev) => {
-            if (JSON.stringify(prev) !== JSON.stringify(incoming)) {
-              return incoming;
-            }
-            return prev;
-          });
-        }
-      } catch (err) {
-        console.error("Failed to sync notifications.", err);
-      }
-
+      // 1. Fetch Student Profile
       try {
         const profileRes = await fetch(`${API_BASE_URL}/api/student/profile`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -154,6 +134,8 @@ function Navigation() {
 
         if (profileRes.ok && isMounted) {
           const data = await profileRes.json();
+          currentStudentNum = data.student_number || currentStudentNum;
+
           setStudentInfo((prev) => {
             if (JSON.stringify(prev) !== JSON.stringify(data)) {
               return data;
@@ -172,6 +154,68 @@ function Navigation() {
         }
       } catch (err) {
         console.error("Failed to fetch header avatar snapshot.", err);
+      }
+
+      // 2. Fetch Student Portal Notifications
+      let portalNotifs = [];
+      try {
+        const notifRes = await fetch(`${API_BASE_URL}/api/student/notifications`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (notifRes.status === 401) {
+          localStorage.clear();
+          window.location.href = "/";
+          return;
+        }
+
+        if (notifRes.ok && isMounted) {
+          const data = await notifRes.json();
+          portalNotifs = data.notifications || [];
+        }
+      } catch (err) {
+        console.error("Failed to sync notifications.", err);
+      }
+
+      // 3. Check Faculty Evaluation Notification Status
+      if (currentStudentNum) {
+        try {
+          const evalRes = await fetch(
+            `${EVAL_API}/portal/my-evaluation-notification?student_number=${encodeURIComponent(currentStudentNum)}`
+          );
+          if (evalRes.ok && isMounted) {
+            const evalData = await evalRes.json();
+            if (evalData.shouldNotify) {
+              const evalNotifObj = {
+                id: "eval_notification_active",
+                title: "Faculty Evaluation Period Open",
+                message: evalData.message || "Faculty evaluation is now open. Please complete your assigned evaluations.",
+                meta: "System | Evaluation",
+                time: "Action Required",
+                read: false,
+                isExternalEval: true,
+                externalUrl: `${EVAL_URL}/portal-entry?student_number=${encodeURIComponent(currentStudentNum)}`
+              };
+
+              // Prepend evaluation notification if not already added
+              const exists = portalNotifs.some((n) => n.id === "eval_notification_active");
+              if (!exists) {
+                portalNotifs = [evalNotifObj, ...portalNotifs];
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch evaluation status notification.", err);
+        }
+      }
+
+      if (isMounted) {
+        setNotifications((prev) => {
+          if (JSON.stringify(prev) !== JSON.stringify(portalNotifs)) {
+            return portalNotifs;
+          }
+          return prev;
+        });
       }
     };
 
@@ -209,15 +253,21 @@ function Navigation() {
   };
 
   const handleNotificationClick = async (notif) => {
+    setIsNotifOpen(false);
+
+    if (notif.isExternalEval && notif.externalUrl) {
+      window.location.href = notif.externalUrl;
+      return;
+    }
+
     const targetRoute = notif.link || "/Records_request";
     const notifId = String(notif.id);
 
     setNotifications((prev) =>
       prev.map((n) => (String(n.id) === notifId ? { ...n, read: true } : n))
     );
-    setIsNotifOpen(false);
 
-    if (!notif.read) {
+    if (!notif.read && !notif.id.startsWith("eval_")) {
       const token = localStorage.getItem("token");
       try {
         const res = await fetch(`${API_BASE_URL}/api/student/notifications/read/${notifId}`, {
@@ -238,6 +288,11 @@ function Navigation() {
     if (location.pathname !== targetRoute) {
       navigate(targetRoute);
     }
+  };
+
+  const getEvaluationLink = () => {
+    const studentNum = studentInfo?.student_number || localStorage.getItem("student_number") || "";
+    return `${EVAL_URL}/portal-entry?student_number=${encodeURIComponent(studentNum)}`;
   };
 
   useEffect(() => {
@@ -529,9 +584,12 @@ function Navigation() {
           </li>
           {isLoggedIn ? (
             <li className="nav-list-item">
-              <NavLink to="/Evaluation" className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+              <a 
+                href={getEvaluationLink()} 
+                className="nav-item"
+              >
                 Evaluation
-              </NavLink>
+              </a>
             </li>
           ) : (
             <li className="nav-list-item">
@@ -582,9 +640,13 @@ function Navigation() {
               <NavLink to="/Title_audit" onClick={closeMenu} className={({ isActive }) => `m-link ${isActive ? "active" : ""}`}>Title Audit</NavLink>
               <NavLink to="/Records_request" onClick={closeMenu} className={({ isActive }) => `m-link ${isActive ? "active" : ""}`}>Records Request</NavLink>
               {isLoggedIn ? (
-                <NavLink to="/Evaluation" onClick={closeMenu} className={({ isActive }) => `m-link ${isActive ? "active" : ""}`}>
+                <a 
+                  href={getEvaluationLink()} 
+                  onClick={closeMenu} 
+                  className="m-link"
+                >
                   Evaluation
-                </NavLink>
+                </a>
               ) : (
                 <a 
                   href="https://btech-admission.vercel.app" 
