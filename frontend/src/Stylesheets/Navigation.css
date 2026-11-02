@@ -834,6 +834,52 @@
 }
 
 /* =======================================================
+   RED NOTIFICATION DOT FOR ACTIVE EVALUATION BUTTON
+======================================================= */
+.eval-nav-link {
+  position: relative;
+}
+
+.eval-m-link {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.active-eval-dot {
+  position: absolute;
+  top: 12px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444; /* Bright Red */
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4);
+  animation: evalDotPulse 1.8s infinite ease-in-out;
+}
+
+.active-eval-dot.mobile-dot {
+  position: static;
+  margin-left: 8px;
+}
+
+@keyframes evalDotPulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* =======================================================
    ANIMATIONS DISPATCHING MATRICES
 ======================================================= */
 @keyframes popOver {

@@ -13,6 +13,7 @@ function Navigation() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showNavLogoutConfirm, setShowNavLogoutConfirm] = useState(false); 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [hasActiveEvaluation, setHasActiveEvaluation] = useState(false);
   
   // Mobile Scroll State
   const [isMobileHidden, setIsMobileHidden] = useState(false);
@@ -177,7 +178,7 @@ function Navigation() {
         console.error("Failed to sync notifications.", err);
       }
 
-      // 3. Check Faculty Evaluation Notification Status
+      // 3. Check Faculty Evaluation Notification Status & Reminder Deadline
       if (currentStudentNum) {
         try {
           const evalRes = await fetch(
@@ -186,10 +187,12 @@ function Navigation() {
           if (evalRes.ok && isMounted) {
             const evalData = await evalRes.json();
             if (evalData.shouldNotify) {
+              setHasActiveEvaluation(true);
+
               const evalNotifObj = {
                 id: "eval_notification_active",
-                title: "Faculty Evaluation Period Open",
-                message: evalData.message || "Faculty evaluation is now open. Please complete your assigned evaluations.",
+                title: "Faculty Evaluation Reminder",
+                message: evalData.message || "Faculty evaluation is now open. Please complete your assigned evaluations before the deadline.",
                 meta: "System | Evaluation",
                 time: "Action Required",
                 read: false,
@@ -197,11 +200,13 @@ function Navigation() {
                 externalUrl: `${EVAL_URL}/portal-entry?student_number=${encodeURIComponent(currentStudentNum)}`
               };
 
-              // Prepend evaluation notification if not already added
+              // Prepend evaluation notification if not already present
               const exists = portalNotifs.some((n) => n.id === "eval_notification_active");
               if (!exists) {
                 portalNotifs = [evalNotifObj, ...portalNotifs];
               }
+            } else {
+              setHasActiveEvaluation(false);
             }
           }
         } catch (err) {
@@ -588,9 +593,10 @@ function Navigation() {
                 href={getEvaluationLink()} 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="nav-item"
+                className="nav-item eval-nav-link"
               >
                 Evaluation
+                {hasActiveEvaluation && <span className="active-eval-dot" aria-hidden="true" />}
               </a>
             </li>
           ) : (
@@ -647,9 +653,10 @@ function Navigation() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={closeMenu} 
-                  className="m-link"
+                  className="m-link eval-m-link"
                 >
                   Evaluation
+                  {hasActiveEvaluation && <span className="active-eval-dot mobile-dot" aria-hidden="true" />}
                 </a>
               ) : (
                 <a 
