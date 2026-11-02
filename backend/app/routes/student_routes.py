@@ -559,74 +559,70 @@ async def get_all_records_for_admin():
 
 @router.post("/records/status-update")
 async def update_request_status(payload: dict = Body(...)):
-    student_number = payload.get("studentNumber")
+    student_number = str(payload.get("studentNumber", ""))
     request_id = payload.get("requestId")
-    new_status = payload.get("newStatus")
+    request_idx = payload.get("requestIndex")
+    new_status = payload.get("newStatus", "Pending")
 
-    if not student_number or not request_id or not new_status:
+    if not student_number or not new_status:
         raise HTTPException(status_code=400, detail="Missing required parameters.")
 
-    db = students_collection.database
-    archived_coll = db["archived_requests"]
-
-    active_req = await db["records_requests"].find_one({
-        "studentNumber": str(student_number),
-        "$or": [{"id": str(request_id)}, {"_id": str(request_id)}]
+    # Find student
+    student = await students_collection.find_one({
+        "$or": [
+            {"studentNumber": student_number},
+            {"student_number": student_number},
+            {"studentNumber": int(student_number) if student_number.isdigit() else student_number}
+        ]
     })
 
-    if not active_req:
-        student_doc = await db["students"].find_one({"studentNumber": str(student_number)})
-        if student_doc and "record_requests" in student_doc:
-            for req in student_doc["record_requests"]:
-                if str(req.get("id")) == str(request_id) or str(req.get("_id")) == str(request_id):
-                    active_req = req
-                    active_req["studentNumber"] = str(student_number)
-                    active_req["studentName"] = f"{student_doc.get('firstName', '')} {student_doc.get('lastName', '')}".strip()
-                    break
+    if not student:
+        raise HTTPException(status_code=404, detail="Student profile not found.")
 
-    if not active_req:
-        raise HTTPException(status_code=404, detail="Active request not found.")
+    requests = student.get("record_requests", [])
+    target_idx = -1
 
-    if new_status == "Ready for Pickup":
-        archive_doc = {
-            "id": active_req.get("id") or str(request_id),
-            "studentNumber": str(student_number),
-            "studentName": active_req.get("studentName", "N/A"),
-            "documentType": active_req.get("documentType", "N/A"),
-            "yearSemester": active_req.get("yearSemester", "N/A"),
-            "reason": active_req.get("reason", ""),
-            "dateRequested": active_req.get("dateRequested", ""),
-            "status": "Ready for Pickup",
-            "createdAt": active_req.get("createdAt", datetime.utcnow()),
-            "archivedAt": datetime.utcnow()
+    for idx, r in enumerate(requests):
+        r_id = str(r.get("id") or r.get("_id") or "")
+        if (request_id and r_id == str(request_id)) or (request_idx is not None and idx == request_idx):
+            target_idx = idx
+            break
+
+    if target_idx == -1:
+        raise HTTPException(status_code=404, detail="Record request not found.")
+
+    doc_type = requests[target_idx].get("documentType", "Document")
+    requests[target_idx]["status"] = new_status
+    requests[target_idx]["updatedAt"] = datetime.utcnow().isoformat()
+
+    # Update status in student document
+    if new_status.lower() == "ready for pickup":
+        import uuid
+        new_notification = {
+            "id": f"notif_{uuid.uuid4().hex[:8]}",
+            "title": "Document Request Ready for Pickup",
+            "message": f"Your requested {doc_type} is now ready for pickup at the Registrar's Office.",
+            "meta": "System | Records Request",
+            "time": "Just now",
+            "read": False,
+            "link": "/Records_request",
+            "createdAt": datetime.utcnow().isoformat()
         }
-        
-        await archived_coll.insert_one(archive_doc)
 
-        await db["records_requests"].delete_one({
-            "studentNumber": str(student_number),
-            "$or": [{"id": str(request_id)}, {"_id": str(request_id)}]
-        })
-
-        await db["students"].update_one(
-            {"studentNumber": str(student_number)},
-            {"$pull": {"record_requests": {"id": str(request_id)}}}
+        await students_collection.update_one(
+            {"_id": student["_id"]},
+            {
+                "$set": {"record_requests": requests},
+                "$push": {"notifications": {"$each": [new_notification], "$position": 0}}
+            }
         )
-
-        return {"message": "Request marked as Ready for Pickup and moved to archives."}
-
     else:
-        await db["records_requests"].update_one(
-            {"studentNumber": str(student_number), "$or": [{"id": str(request_id)}, {"_id": str(request_id)}]},
-            {"$set": {"status": new_status}}
+        await students_collection.update_one(
+            {"_id": student["_id"]},
+            {"$set": {"record_requests": requests}}
         )
 
-        await db["students"].update_one(
-            {"studentNumber": str(student_number), "record_requests.id": str(request_id)},
-            {"$set": {"record_requests.$.status": new_status}}
-        )
-
-        return {"message": f"Status updated to {new_status}."}
+    return {"message": f"Status updated to {new_status} and student notified."}
 
 
 @router.get("/records/archived")
