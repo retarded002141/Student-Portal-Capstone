@@ -118,6 +118,14 @@ function Navigation() {
         const notifRes = await fetch(`${API_BASE_URL}/api/student/notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+
+        // Auto logout if token expired
+        if (notifRes.status === 401) {
+          localStorage.clear();
+          window.location.href = "/";
+          return;
+        }
+
         if (notifRes.ok && isMounted) {
           const data = await notifRes.json();
           const incoming = data.notifications || [];
@@ -136,6 +144,14 @@ function Navigation() {
         const profileRes = await fetch(`${API_BASE_URL}/api/student/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+
+        // Auto logout if token expired
+        if (profileRes.status === 401) {
+          localStorage.clear();
+          window.location.href = "/";
+          return;
+        }
+
         if (profileRes.ok && isMounted) {
           const data = await profileRes.json();
           setStudentInfo((prev) => {
