@@ -256,7 +256,7 @@ function Navigation() {
     setIsNotifOpen(false);
 
     if (notif.isExternalEval && notif.externalUrl) {
-      window.location.href = notif.externalUrl;
+      window.open(notif.externalUrl, "_blank", "noopener,noreferrer");
       return;
     }
 
@@ -586,6 +586,8 @@ function Navigation() {
             <li className="nav-list-item">
               <a 
                 href={getEvaluationLink()} 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="nav-item"
               >
                 Evaluation
@@ -642,6 +644,8 @@ function Navigation() {
               {isLoggedIn ? (
                 <a 
                   href={getEvaluationLink()} 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={closeMenu} 
                   className="m-link"
                 >
