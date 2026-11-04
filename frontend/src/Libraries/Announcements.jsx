@@ -137,7 +137,6 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
     setIndex((i) => Math.min(i, maxIndex));
   }, [maxIndex]);
 
-  // Sync scroll dots on mobile touch swipe
   const handleScroll = () => {
     if (window.innerWidth <= 768 && viewportRef.current) {
       const scrollLeft = viewportRef.current.scrollLeft;
