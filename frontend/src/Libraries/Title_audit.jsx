@@ -181,7 +181,7 @@ export default function Title_audit() {
                     })}
 
                     <tr className="totals-row">
-                      <td colSpan={2} className="totals-label">Total Units</td>
+                      <td colSpan={2} className="totals-label"></td>
                       <td className="num totals-val">{totalUnits}</td>
                       <td></td>
                     </tr>
