@@ -311,64 +311,67 @@ export default function Profile() {
   return (
     <main className="profile-page">
       <h2 className="page-title reveal-on-scroll">Student Profile</h2>
-      <br />
 
       <div className="profile-shell">
         <aside className="profile-sidebar reveal-on-scroll">
           <div className="sidebar-top">
-            <div className="avatar-wrapper">
-              <div className="avatar">
-                {currentAvatarUrl && (
-                  <img 
-                    src={currentAvatarUrl} 
-                    alt="Student Avatar" 
-                    className="avatar-img" 
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      if (e.target.nextElementSibling) {
-                        e.target.nextElementSibling.style.display = "flex";
-                      }
-                    }}
-                  />
-                )}
-                <div 
-                  className="avatar-fallback" 
-                  style={{ display: currentAvatarUrl ? "none" : "flex" }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                    <path
-                      fill="currentColor"
-                      d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+            <div className="sidebar-header-card">
+              <div className="avatar-wrapper">
+                <div className="avatar">
+                  {currentAvatarUrl && (
+                    <img 
+                      src={currentAvatarUrl} 
+                      alt="Student Avatar" 
+                      className="avatar-img" 
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        if (e.target.nextElementSibling) {
+                          e.target.nextElementSibling.style.display = "flex";
+                        }
+                      }}
                     />
-                  </svg>
+                  )}
+                  <div 
+                    className="avatar-fallback" 
+                    style={{ display: currentAvatarUrl ? "none" : "flex" }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+                      />
+                    </svg>
+                  </div>
                 </div>
+
+                <button 
+                  className="edit-avatar" 
+                  type="button" 
+                  onClick={handleOpenAvatarModal}
+                  title="Edit Profile Picture"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
               </div>
 
-              <button 
-                className="edit-avatar" 
-                type="button" 
-                onClick={handleOpenAvatarModal}
-                title="Edit Profile Picture"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                  <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-              </button>
-            </div>
+              <div className="student-info-meta">
+                <div className="student-name">
+                  {student.last_name}, {student.first_name} {student.middle_initial}. 
+                  <span className="profile-year-level">
+                    (BSIT {student.year_level ? student.year_level.match(/\d+/)?.[0] || "" : ""}{student.section || "A"})
+                  </span>
+                </div>
 
-            <div className="student-name">
-              {student.last_name}, {student.first_name} {student.middle_initial}. 
-              <span className="profile-year-level">
-                (BSIT {student.year_level ? student.year_level.match(/\d+/)?.[0] || "" : ""}{student.section || "A"})
-              </span>
-            </div>
-
-            <div className="student-credentials-row">
-              <span className="student-number">Student no: {student.student_number}</span>
-              <span className={`status-pill ${student.status?.toLowerCase() === "irregular" ? "irregular" : "regular"}`}>
-                {student.status || "Regular"}
-              </span>
+                <div className="student-credentials-row">
+                  <span className="student-number">Student no: {student.student_number}</span>
+                  <span className={`status-pill ${student.status?.toLowerCase() === "irregular" ? "irregular" : "regular"}`}>
+                    {student.status || "Regular"}
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="profile-menu">
@@ -436,10 +439,14 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div className="row-3">
+                <div className="row-4-gender">
                   <div className="input-group">
                     <label className="input-label">Age</label>
                     <input className="ro-input" disabled value={personal.age || ""} />
+                  </div>
+                  <div className="input-group">
+                    <label className="input-label">Sex / Gender</label>
+                    <input className="ro-input" disabled value={personal.gender || personal.sex || "Male"} />
                   </div>
                   <div className="input-group">
                     <label className="input-label">Religion</label>
