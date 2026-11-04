@@ -367,16 +367,16 @@
   background: #ffffff;
   width: 100%;
   max-width: 580px;
-  max-height: 90vh;
-  border-radius: 14px;
+  max-height: 85vh;
+  border-radius: 16px;
   padding: 24px;
-  overflow-y: auto;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   gap: 16px;
   box-sizing: border-box;
   animation: annModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
 @keyframes annModalPop {
@@ -396,6 +396,7 @@
   align-items: flex-start;
   border-bottom: 1px solid #f1f5f9;
   padding-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .annModalTitleWrap {
@@ -423,12 +424,6 @@
   line-height: 1.3;
 }
 
-.annModalDate {
-  font-size: 11px;
-  color: #64748b;
-  margin-top: 4px;
-}
-
 .annModalClose {
   background: transparent;
   border: none;
@@ -444,12 +439,14 @@
   color: #0f172a;
 }
 
+/* FIXED ASPECT RATIO IMAGE (16:9) */
 .annModalImage {
   width: 100%;
-  max-height: 520px;
+  aspect-ratio: 16 / 9;
   border-radius: 10px;
-  background-color: #0f172a;
+  background-color: #f1f5f9;
   overflow: hidden;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -457,14 +454,35 @@
 
 .annModalImage img {
   width: 100%;
-  height: auto;
-  max-height: 520px;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
+/* SCROLLABLE DESCRIPTION CONTAINER */
 .annModalBody {
-  padding: 4px 0;
+  padding: 4px 8px 4px 0;
+  overflow-y: auto;
+  max-height: 260px;
+  flex-grow: 1;
+}
+
+.annModalBody::-webkit-scrollbar {
+  width: 6px;
+}
+
+.annModalBody::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.annModalBody::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.annModalBody::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .annModalDesc {
@@ -483,23 +501,21 @@
     padding: 24px 16px 40px;
   }
 
-  /* Hide navigation arrows completely on mobile view */
   .carousel-nav {
     display: none !important;
   }
 
-  /* Enable native horizontal swipe with scroll snapping */
   .carousel-viewport {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
+    scrollbar-width: none;
     padding: 12px 0;
   }
 
   .carousel-viewport::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
+    display: none;
   }
 
   .carousel-track {
@@ -508,7 +524,6 @@
     gap: 12px;
   }
 
-  /* Allow adjacent card edges to peek through on screen sides */
   .carousel-card {
     flex: 0 0 85% !important;
     scroll-snap-align: center;
