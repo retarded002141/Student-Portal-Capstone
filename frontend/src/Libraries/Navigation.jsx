@@ -126,7 +126,6 @@ function Navigation() {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        // Auto logout if token expired
         if (profileRes.status === 401) {
           localStorage.clear();
           window.location.href = "/";
@@ -178,7 +177,7 @@ function Navigation() {
         console.error("Failed to sync notifications.", err);
       }
 
-      // 3. Check Faculty Evaluation Notification Status & Reminder Deadline
+      // 3. Check Faculty Evaluation Notification Status
       if (currentStudentNum) {
         try {
           const evalRes = await fetch(
@@ -200,7 +199,6 @@ function Navigation() {
                 externalUrl: `${EVAL_URL}/portal-entry?student_number=${encodeURIComponent(currentStudentNum)}`
               };
 
-              // Prepend evaluation notification if not already present
               const exists = portalNotifs.some((n) => n.id === "eval_notification_active");
               if (!exists) {
                 portalNotifs = [evalNotifObj, ...portalNotifs];
@@ -243,7 +241,11 @@ function Navigation() {
   }, [isLoggedIn, isNotifOpen, isProfileOpen]);
 
   const markAllAsRead = async (e) => {
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     const token = localStorage.getItem("token");
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
@@ -257,7 +259,12 @@ function Navigation() {
     }
   };
 
-  const handleNotificationClick = async (notif) => {
+  const handleNotificationClick = async (notif, e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     setIsNotifOpen(false);
 
     if (notif.isExternalEval && notif.externalUrl) {
@@ -265,34 +272,26 @@ function Navigation() {
       return;
     }
 
-    const targetRoute = notif.link || "/Records_request";
+    let targetRoute = notif.link || "/Records_request";
     const notifId = String(notif.id);
 
     setNotifications((prev) =>
       prev.map((n) => (String(n.id) === notifId ? { ...n, read: true } : n))
     );
 
-    if (!notif.read && !notif.id.startsWith("eval_")) {
+    if (!notif.read && !notifId.startsWith("eval_")) {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch(`${API_BASE_URL}/api/student/notifications/read/${notifId}`, {
+        await fetch(`${API_BASE_URL}/api/student/notifications/read/${notifId}`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.notifications) {
-            setNotifications(data.notifications);
-          }
-        }
       } catch (err) {
         console.error("Failed to mark single notification as read:", err);
       }
     }
 
-    if (location.pathname !== targetRoute) {
-      navigate(targetRoute);
-    }
+    navigate(targetRoute);
   };
 
   const getEvaluationLink = () => {
@@ -393,7 +392,12 @@ function Navigation() {
       </button>
 
       {isNotifOpen && (
-        <div className="notif-panel" role="dialog" aria-label="Notifications" onClick={(e) => e.stopPropagation()}>
+        <div 
+          className="notif-panel" 
+          role="dialog" 
+          aria-label="Notifications"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           <div className="notif-header">
             <div className="notif-title-group">
               <span className="notif-title">Notifications</span>
@@ -420,7 +424,7 @@ function Navigation() {
                 <div 
                   key={n.id} 
                   className={`notif-item ${n.read ? "read" : "unread"}`}
-                  onClick={() => handleNotificationClick(n)}
+                  onClick={(e) => handleNotificationClick(n, e)}
                   style={{ cursor: "pointer" }}
                 >
                   <div className="notif-status-dot" />
@@ -468,7 +472,12 @@ function Navigation() {
       </button>
 
       {isProfileOpen && (
-        <div className="profile-panel" role="dialog" aria-label="Account Settings" onClick={(e) => e.stopPropagation()}>
+        <div 
+          className="profile-panel" 
+          role="dialog" 
+          aria-label="Account Settings"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           <div className="profile-panel-header">
             <div className="profile-card-user">
               <div className="profile-card-avatar">

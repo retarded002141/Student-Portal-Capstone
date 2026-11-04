@@ -544,7 +544,8 @@ export default function Records_request() {
           Request history resets every month. Only recent requests within the current month will be displayed.
         </p>
 
-        <div className="records-table-wrapper">
+        {/* DESKTOP TABLE VIEW */}
+        <div className="records-table-wrapper desktop-only">
           <table className="records-table">
             <thead>
               <tr>
@@ -605,6 +606,50 @@ export default function Records_request() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* MOBILE CARDS VIEW */}
+        <div className="mobile-cards-container mobile-only">
+          {history.length > 0 ? (
+            history.map((item, index) => (
+              <div className="records-card" key={`mob-rec-${item.id || index}`}>
+                <div className="records-card-header">
+                  <div className="records-card-title-group">
+                    <span className="records-card-doc">{item.documentType}</span>
+                    <span className="records-card-date">{item.dateRequested}</span>
+                  </div>
+                  <span className={`records-status-badge ${item.status ? item.status.toLowerCase().replace(/\s+/g, '-') : 'pending'}`}>
+                    {item.status || "Pending"}
+                  </span>
+                </div>
+
+                <div className="records-card-body">
+                  <div className="rec-row">
+                    <span className="rec-label">Term:</span>
+                    <span className="rec-val">{item.yearSemester || "N/A"}</span>
+                  </div>
+                  <div className="rec-row">
+                    <span className="rec-label">Reason:</span>
+                    <span className="rec-val">{item.reason || "—"}</span>
+                  </div>
+                </div>
+
+                {(item.status || "").toLowerCase() === "pending" && (
+                  <div className="records-card-footer">
+                    <button 
+                      type="button" 
+                      className="records-delete-action-btn"
+                      onClick={() => handleTriggerCancel(item.id)}
+                    >
+                      Cancel Request
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="records-empty-card">No requests yet.</div>
+          )}
         </div>
       </section>
 
