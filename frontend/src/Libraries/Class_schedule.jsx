@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef, useMemo } from "react";
 import "../Stylesheets/Class_schedule.css";
 import { API_BASE_URL } from "../axios";
@@ -9,6 +10,10 @@ export default function Class_schedule() {
 
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const yearDropdownRef = useRef(null);
+
+  // =========================================
+  // SCROLL ANIMATION
+  // =========================================
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -24,10 +29,15 @@ export default function Class_schedule() {
     );
 
     const elements = document.querySelectorAll(".reveal-on-scroll");
+
     elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
   }, [scheduleData]);
+
+  // =========================================
+  // FETCH CLASS SCHEDULE
+  // =========================================
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -39,11 +49,14 @@ export default function Class_schedule() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/student/schedule`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/student/schedule`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const data = await response.json();
 
@@ -58,11 +71,17 @@ export default function Class_schedule() {
           return;
         }
 
-        setAllSchedules(data.schedules);
+        const schedules = data.schedules || {};
+        const years = Object.keys(schedules);
 
-        const latestYear = Object.keys(data.schedules).slice(-1)[0];
-        setSelectedYear(latestYear);
-        setScheduleData(data.schedules[latestYear]);
+        setAllSchedules(schedules);
+
+        if (years.length > 0) {
+          const latestYear = years[years.length - 1];
+
+          setSelectedYear(latestYear);
+          setScheduleData(schedules[latestYear]);
+        }
       } catch (error) {
         alert("Cannot connect to backend.");
       }
@@ -70,14 +89,27 @@ export default function Class_schedule() {
 
     fetchSchedule();
 
+    // CLOSE DROPDOWN WHEN CLICKING OUTSIDE
+
     const handleOutsideClick = (e) => {
-      if (yearDropdownRef.current && !yearDropdownRef.current.contains(e.target)) {
+      if (
+        yearDropdownRef.current &&
+        !yearDropdownRef.current.contains(e.target)
+      ) {
         setIsYearDropdownOpen(false);
       }
     };
+
     window.addEventListener("click", handleOutsideClick);
-    return () => window.removeEventListener("click", handleOutsideClick);
+
+    return () => {
+      window.removeEventListener("click", handleOutsideClick);
+    };
   }, []);
+
+  // =========================================
+  // SELECT ACADEMIC YEAR
+  // =========================================
 
   const handleSelectYear = (year) => {
     setSelectedYear(year);
@@ -85,12 +117,18 @@ export default function Class_schedule() {
     setIsYearDropdownOpen(false);
   };
 
+  // =========================================
+  // GROUP SUBJECTS
+  // =========================================
+
   const groupedSubjects = useMemo(() => {
     if (!scheduleData?.subjects) return [];
 
     const map = new Map();
+
     scheduleData.subjects.forEach((subj) => {
       const code = (subj.code || "").toUpperCase();
+
       if (!map.has(code)) {
         map.set(code, {
           code: subj.code,
@@ -98,19 +136,32 @@ export default function Class_schedule() {
           units: subj.units,
           prof: subj.prof,
           email: subj.email,
-          rooms: [subj.room],
-          sections: [subj.section],
-          schedules: [subj.schedule],
+
+          rooms: subj.room ? [subj.room] : [],
+          sections: subj.section ? [subj.section] : [],
+          schedules: subj.schedule ? [subj.schedule] : [],
         });
       } else {
         const existing = map.get(code);
-        if (subj.room && !existing.rooms.includes(subj.room)) {
+
+        if (
+          subj.room &&
+          !existing.rooms.includes(subj.room)
+        ) {
           existing.rooms.push(subj.room);
         }
-        if (subj.section && !existing.sections.includes(subj.section)) {
+
+        if (
+          subj.section &&
+          !existing.sections.includes(subj.section)
+        ) {
           existing.sections.push(subj.section);
         }
-        if (subj.schedule && !existing.schedules.includes(subj.schedule)) {
+
+        if (
+          subj.schedule &&
+          !existing.schedules.includes(subj.schedule)
+        ) {
           existing.schedules.push(subj.schedule);
         }
       }
@@ -119,15 +170,20 @@ export default function Class_schedule() {
     return Array.from(map.values());
   }, [scheduleData]);
 
+  // =========================================
+  // LOADING SCREEN
+  // =========================================
+
   if (!scheduleData) {
     return (
       <main className="class-schedule-container">
         <h2 className="page-title">Class Schedule</h2>
-        
+
         <div className="schedule-loading-card">
           <div className="schedule-spinner-wrapper">
             <div className="schedule-circular-spinner"></div>
           </div>
+
           <div className="schedule-skeleton-lines">
             <div className="schedule-skeleton-line short"></div>
             <div className="schedule-skeleton-line full"></div>
@@ -139,47 +195,91 @@ export default function Class_schedule() {
     );
   }
 
+  // =========================================
+  // MAIN PAGE
+  // =========================================
+
   return (
     <main className="class-schedule-container">
+
+      {/* =====================================
+          PAGE HEADER
+      ===================================== */}
+
       <div className="class-schedule-header reveal-on-scroll">
+
         <div>
-          <h2 className="page-title">Class Schedule</h2>
+          <h2 className="page-title">
+            Class Schedule
+          </h2>
+
           <p className="schedule-note">
-            Please refer to this official schedule of your classes. Any room or professor adjustments will be reflected here.
+            Please refer to this official schedule of your classes.
+            Any room or professor adjustments will be reflected here.
           </p>
         </div>
 
-        <div className="academic-year-select-group" ref={yearDropdownRef}>
-          <span className="input-label">Academic Year</span>
+        {/* ACADEMIC YEAR DROPDOWN */}
+
+        <div
+          className="academic-year-select-group"
+          ref={yearDropdownRef}
+        >
+          <span className="input-label">
+            Academic Year
+          </span>
+
           <div className="schedule-select-wrap">
-            <div 
-              className={`schedule-custom-select-trigger ${isYearDropdownOpen ? "open" : ""}`}
-              onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)}
+
+            <div
+              className={`schedule-custom-select-trigger ${
+                isYearDropdownOpen ? "open" : ""
+              }`}
+              onClick={() =>
+                setIsYearDropdownOpen(!isYearDropdownOpen)
+              }
             >
-              <span>{selectedYear || "Select academic year"}</span>
-              <span className="schedule-chevron" aria-hidden="true">▾</span>
+              <span>
+                {selectedYear || "Select academic year"}
+              </span>
+
+              <span
+                className="schedule-chevron"
+                aria-hidden="true"
+              >
+                ▾
+              </span>
             </div>
-            
+
             {isYearDropdownOpen && (
               <div className="schedule-custom-dropdown-list">
+
                 {Object.keys(allSchedules).map((year) => (
-                  <div 
-                    key={year} 
+                  <div
+                    key={year}
                     className="schedule-custom-option"
                     onClick={() => handleSelectYear(year)}
                   >
                     {year}
                   </div>
                 ))}
+
               </div>
             )}
+
           </div>
         </div>
+
       </div>
 
-      {/* DESKTOP TABLE VIEW */}
+      {/* =====================================
+          DESKTOP TABLE VIEW
+      ===================================== */}
+
       <div className="schedule-table-wrapper desktop-only reveal-on-scroll delay-1">
+
         <table className="schedule-table">
+
           <thead>
             <tr>
               <th>Course</th>
@@ -192,16 +292,26 @@ export default function Class_schedule() {
           </thead>
 
           <tbody>
+
             {groupedSubjects.map((subject, index) => (
               <tr key={`${subject.code}-${index}`}>
+
                 <td>
-                  <span className="course-code">({subject.code})</span>
+                  <span className="course-code">
+                    ({subject.code})
+                  </span>
+
                   <br />
-                  <span className="course-title">{subject.title}</span>
+
+                  <span className="course-title">
+                    {subject.title}
+                  </span>
                 </td>
 
-                <td className="num">{subject.units}</td>
-                
+                <td className="num">
+                  {subject.units}
+                </td>
+
                 <td>
                   {subject.rooms.map((rm, idx) => (
                     <div key={idx}>{rm}</div>
@@ -221,52 +331,164 @@ export default function Class_schedule() {
                 </td>
 
                 <td>
-                  <span className="prof-name">{subject.prof}</span>
+                  <span className="prof-name">
+                    {subject.prof}
+                  </span>
+
                   <br />
-                  <span className="email">{subject.email}</span>
+
+                  <span className="email">
+                    {subject.email}
+                  </span>
                 </td>
+
               </tr>
             ))}
+
           </tbody>
         </table>
       </div>
 
-      {/* MOBILE CARDS VIEW */}
-      <div className="mobile-cards-container mobile-only">
-        {groupedSubjects.map((subject, index) => (
-          <div className="schedule-card" key={`mob-${subject.code}-${index}`}>
-            <div className="card-top-row">
-              <span className="course-code">({subject.code})</span>
-              <span className="card-units-badge">{subject.units} Units</span>
-            </div>
-            <h3 className="card-title">{subject.title}</h3>
+      {/* =====================================
+          MOBILE CARD VIEW
+      ===================================== */}
 
-            <div className="card-details-grid">
-              <div className="detail-item">
-                <span className="detail-label">Schedule:</span>
-                <span className="detail-value highlight">
-                  {subject.schedules.join(" | ")}
+      <div className="mobile-cards-container mobile-only">
+
+        {groupedSubjects.length > 0 ? (
+
+          groupedSubjects.map((subject, index) => (
+
+            <div
+              className="schedule-card"
+              key={`mob-${subject.code}-${index}`}
+            >
+
+              {/* COURSE CODE AND UNITS */}
+
+              <div className="card-top-row">
+
+                <span className="course-code">
+                  ({subject.code})
                 </span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Room:</span>
-                <span className="detail-value">{subject.rooms.join(", ")}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Section:</span>
-                <span className="detail-value">{subject.sections.join(", ")}</span>
-              </div>
-              <div className="detail-item full-width">
-                <span className="detail-label">Professor:</span>
-                <span className="detail-value">
-                  {subject.prof}
-                  <small className="card-email">{subject.email}</small>
+
+                <span className="card-units-badge">
+                  {subject.units} Units
                 </span>
+
               </div>
+
+              {/* SUBJECT TITLE */}
+
+              <h3 className="card-title">
+                {subject.title}
+              </h3>
+
+              {/* SUBJECT DETAILS */}
+
+              <div className="card-details-grid">
+
+                {/* SCHEDULE - FULL WIDTH */}
+
+                <div className="detail-item schedule-detail">
+
+                  <span className="detail-label">
+                    Class Schedule
+                  </span>
+
+                  <div className="schedule-list">
+
+                    {subject.schedules.map((sch, idx) => (
+
+                      <div
+                        className="schedule-entry"
+                        key={idx}
+                      >
+
+                        <span className="schedule-entry-indicator"></span>
+
+                        <span className="schedule-entry-text">
+                          {sch}
+                        </span>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </div>
+
+                {/* ROOM */}
+
+                <div className="detail-item room-detail">
+
+                  <span className="detail-label">
+                    Room
+                  </span>
+
+                  <span className="detail-value">
+                    {subject.rooms.length > 0
+                      ? subject.rooms.join(", ")
+                      : "Not assigned"}
+                  </span>
+
+                </div>
+
+                {/* SECTION */}
+
+                <div className="detail-item section-detail">
+
+                  <span className="detail-label">
+                    Section
+                  </span>
+
+                  <span className="detail-value">
+                    {subject.sections.length > 0
+                      ? subject.sections.join(", ")
+                      : "Not assigned"}
+                  </span>
+
+                </div>
+
+                {/* PROFESSOR */}
+
+                <div className="detail-item full-width professor-detail">
+
+                  <span className="detail-label">
+                    Professor
+                  </span>
+
+                  <span className="professor-name">
+                    {subject.prof || "Not assigned"}
+                  </span>
+
+                  {subject.email && (
+                    <small className="card-email">
+                      {subject.email}
+                    </small>
+                  )}
+
+                </div>
+
+              </div>
+
             </div>
+
+          ))
+
+        ) : (
+
+          <div className="schedule-card">
+            <p className="detail-value">
+              No subjects available for this academic year.
+            </p>
           </div>
-        ))}
+
+        )}
+
       </div>
+
     </main>
   );
 }

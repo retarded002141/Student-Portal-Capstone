@@ -1,7 +1,13 @@
+
+/* =========================================
+   CLASS SCHEDULE - GENERAL
+========================================= */
+
 .class-schedule-container {
   padding: 24px 32px;
   min-height: 100vh;
   background: #f8f8f8;
+  box-sizing: border-box;
 }
 
 .class-schedule-container .loading-text {
@@ -123,6 +129,10 @@
   color: #2e522a;
 }
 
+/* =========================================
+   DESKTOP TABLE
+========================================= */
+
 .schedule-table-wrapper {
   background: #ffffff;
   border-radius: 8px;
@@ -163,90 +173,216 @@
   border-bottom: none;
 }
 
-.schedule-table .num { text-align: left; }
-.course-code { font-size: 12px; color: #b91c1c; font-weight: 600; }
-.course-title { font-weight: 500; }
-.schedule-time { font-weight: 500; color: #1f2933; }
-.prof-name { font-weight: 500; color: #1f2933; }
-.email { font-size: 12px; color: #6b7280; }
+.schedule-table .num {
+  text-align: left;
+}
 
-/* VISIBILITY UTILITIES */
-.desktop-only { display: block; }
-.mobile-only { display: none; }
+.course-code {
+  font-size: 12px;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.course-title {
+  font-weight: 500;
+}
+
+.schedule-time {
+  font-weight: 500;
+  color: #1f2933;
+}
+
+.prof-name {
+  font-weight: 500;
+  color: #1f2933;
+}
+
+.email {
+  font-size: 12px;
+  color: #6b7280;
+}
 
 /* =========================================
-   MOBILE CARD LAYOUT
+   VISIBILITY UTILITIES
 ========================================= */
-@media (max-width: 768px) {
-  .class-schedule-container { padding: 18px 14px; }
-  .class-schedule-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .academic-year-select-group { width: 100%; }
-  .schedule-note { display: none; }
 
-  .desktop-only { display: none !important; }
-  .mobile-only { display: flex !important; flex-direction: column; gap: 12px; }
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* =========================================
+   MOBILE CLASS SCHEDULE DESIGN
+========================================= */
+
+@media (max-width: 768px) {
+
+  .class-schedule-container {
+    padding: 18px 14px 30px;
+    min-height: 100vh;
+    background: #f8f8f8;
+  }
+
+  /* HEADER */
+
+  .class-schedule-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+
+  .page-title {
+    font-size: 23px;
+    font-weight: 700;
+    color: #1f2933;
+  }
+
+  .schedule-note {
+    display: none;
+  }
+
+  /* ACADEMIC YEAR */
+
+  .academic-year-select-group {
+    width: 100%;
+    min-width: unset;
+    gap: 7px;
+  }
+
+  .academic-year-select-group .input-label {
+    font-size: 11px;
+    letter-spacing: 0.6px;
+  }
+
+  .schedule-custom-select-trigger {
+    height: 46px;
+    padding: 0 40px 0 13px;
+    font-size: 14px;
+    border-radius: 9px;
+  }
+
+  .schedule-custom-dropdown-list {
+    max-height: 220px;
+    border-radius: 9px;
+  }
+
+  /* HIDE DESKTOP TABLE */
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* SHOW MOBILE CARDS */
+
+  .mobile-only {
+    display: flex !important;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .mobile-cards-container {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* =====================================
+     SUBJECT CARD
+  ===================================== */
 
   .schedule-card {
+    width: 100%;
+    box-sizing: border-box;
     background: #ffffff;
-    border-radius: 10px;
     border: 1px solid #e5e7eb;
-    padding: 14px 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    border-radius: 11px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.035);
+    transition: box-shadow 0.2s ease;
   }
+
+  /* COURSE CODE AND UNITS */
 
   .card-top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    gap: 10px;
+    margin-bottom: 5px;
+  }
+
+  .card-top-row .course-code {
+    font-size: 11px;
+    font-weight: 700;
+    color: #b91c1c;
   }
 
   .card-units-badge {
-    font-size: 11px;
+    flex-shrink: 0;
+    font-size: 10px;
     font-weight: 700;
     color: #2e522a;
     background: #e4f6e2;
-    padding: 3px 8px;
+    padding: 5px 9px;
     border-radius: 6px;
   }
 
+  /* SUBJECT TITLE */
+
   .card-title {
-    margin: 0 0 12px 0;
+    margin: 0 0 13px;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     color: #1f2933;
-    line-height: 1.35;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
   }
+
+  /* CARD INFORMATION */
 
   .card-details-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 13px 12px;
+    border-top: 1px solid #eef0f2;
+    padding-top: 12px;
   }
 
   .detail-item {
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
   }
+
+  /* FULL WIDTH DETAILS */
 
   .detail-item.full-width {
-    grid-column: span 2;
+    grid-column: 1 / -1;
   }
 
+  /* LABELS */
+
   .detail-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: #6b7280;
     text-transform: uppercase;
+    letter-spacing: 0.45px;
   }
 
+  /* VALUES */
+
   .detail-value {
-    font-size: 13.5px;
+    font-size: 13px;
+    line-height: 1.45;
     color: #374151;
     font-weight: 500;
+    overflow-wrap: anywhere;
+    word-break: normal;
   }
 
   .detail-value.highlight {
@@ -254,10 +390,113 @@
     font-weight: 600;
   }
 
+  /* =====================================
+     CLASS SCHEDULE - FULL WIDTH
+  ===================================== */
+
+  .schedule-detail {
+    grid-column: 1 / -1;
+  }
+
+  .schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 2px;
+  }
+
+  .schedule-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 9px 10px;
+    background: #f5faf4;
+    border: 1px solid #e4f0e1;
+    border-radius: 7px;
+  }
+
+  .schedule-entry-indicator {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #2e522a;
+  }
+
+  .schedule-entry-text {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #1f2933;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  /* =====================================
+     ROOM AND SECTION
+  ===================================== */
+
+  .detail-item.room-detail,
+  .detail-item.section-detail {
+    padding: 10px;
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 7px;
+  }
+
+  /* =====================================
+     PROFESSOR INFORMATION
+  ===================================== */
+
+  .professor-detail {
+    border-top: 1px solid #eef0f2;
+    padding-top: 11px;
+    margin-top: 1px;
+  }
+
+  .professor-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2933;
+    line-height: 1.4;
+  }
+
   .card-email {
     display: block;
     font-size: 11px;
     color: #6b7280;
-    margin-top: 2px;
+    font-weight: 400;
+    margin-top: 3px;
+    overflow-wrap: anywhere;
   }
+
+}
+
+/* =========================================
+   SMALLER MOBILE SCREENS
+========================================= */
+
+@media (max-width: 360px) {
+
+  .class-schedule-container {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+  .schedule-card {
+    padding: 13px;
+  }
+
+  .card-title {
+    font-size: 14px;
+  }
+
+  .detail-value {
+    font-size: 12px;
+  }
+
+  .schedule-entry-text {
+    font-size: 12px;
+  }
+
 }
