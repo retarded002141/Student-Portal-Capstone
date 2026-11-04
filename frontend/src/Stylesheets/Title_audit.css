@@ -1,200 +1,173 @@
 .curriculum-container {
   padding: 24px 32px;
   min-height: 100vh;
-  box-sizing: border-box;
+  background: #f8f8f8;
 }
 
 .curriculum-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
-.curriculum-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; /* Enforces strict column widths to eliminate horizontal page scroll */
-}
-
-/* Explicit column width allocations */
-.col-code {
-  width: 15%;
-}
-
-.col-title {
-  width: 55%;
-}
-
-.col-num {
-  width: 15%;
-}
-
-.col-grade {
-  width: 15%;
-}
-
-/* Truncate long course titles with ellipsis (...) */
-.curriculum-table td.title-cell {
-  max-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #1f2933;
 }
 
 .curriculum-note {
   margin-top: 6px;
   font-size: 14px;
-  color: #b91c1c; /* Crimson color matching standard alert design setups */
+  color: #b91c1c;
 }
 
-.year-tabs {
-  display: inline-flex;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #ffffff;
+/* ==========================================
+   TERM / SCHOOL YEAR BLOCK
+========================================== */
+.curriculum-year-group {
+  margin-top: 24px;
+  width: 100%;
 }
 
-.year-tab {
-  padding: 10px 18px;
-  border: none;
-  background: #ffffff;
-  cursor: pointer;
-  font-size: 16px;
-  color: #9ca3af;
-  font-weight: 500;
-  border-right: 1px solid #d1d5db;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.year-tab:last-child { border-right: none; }
-.year-tab:hover { background: rgba(46, 82, 42, 0.06); color: #2e522a; }
-.year-tab.active { background: rgba(46, 82, 42, 0.14); color: #2e522a; font-weight: 600; }
-
-.year-tab:disabled,
-.year-tab.disabled-tab {
-  background-color: #f3f4f6;
-  color: #9ca3af;
-  cursor: not-allowed;
-  border: 1px dashed #d1d5db;
-  opacity: 0.6;
-}
-
-.year-tab:disabled:hover { background-color: #f3f4f6; color: #9ca3af; }
-.curriculum-block { margin-top: 18px; }
-
-.semester-bar {
-  background: #e8f5e9;
-  padding: 12px 14px;
-  font-weight: 700;
-  font-size: 16px;
-  color: #111111;
+.school-year-banner {
+  background: #e4f6e2;
+  border-bottom: 1px solid #dcefd8;
+  border-radius: 8px 8px 0 0;
+  color: #000000;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
   text-align: center;
-  letter-spacing: 0.5px;
+  box-sizing: border-box;
 }
 
+/* ==========================================
+   TABLE STYLING (MATCHES GRADES / SCHEDULE)
+========================================== */
 .curriculum-table-wrapper {
   background: #ffffff;
+  border-radius: 0 0 8px 8px;
+  border: 1px solid #e5e7eb;
+  border-top: none;
   overflow-x: auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
   -webkit-overflow-scrolling: touch;
 }
 
 .curriculum-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.curriculum-table thead tr { background: #ffffff; }
+/* Explicit column width allocations */
+.col-code {
+  width: 20%;
+}
+
+.col-title {
+  width: 50%;
+}
+
+.col-num {
+  width: 15%;
+  text-align: center;
+}
+
+.col-grade {
+  width: 15%;
+  text-align: center;
+}
+
+.curriculum-table thead {
+  background-color: #ffffff;
+}
 
 .curriculum-table th {
-  padding: 14px 16px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #111111;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 20px;
   text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
+}
+
+.curriculum-table th.col-num,
+.curriculum-table th.col-grade {
+  text-align: center;
 }
 
 .curriculum-table td {
-  padding: 14px 16px;
-  font-size: 16px;
-  color: #111111;
+  padding: 16px 20px;
+  font-size: 15px;
+  color: #374151;
   border-bottom: 1px solid #e5e7eb;
-  text-align: left;
   white-space: nowrap;
 }
 
-/* Container block wrapper for each school year record group */
-.curriculum-year-group {
-  margin-top: 24px;
-  width: 100%;
+.curriculum-table tr:last-child td {
+  border-bottom: none;
 }
 
-/* ==========================================
-   SCHOOL YEAR HEADER (TEXT ONLY)
-========================================== */
-.school-year-banner {
-  background: transparent; 
-  border: none;            
-  color: #1e293b;          
-  padding: 16px 0 8px;     
-  font-weight: 700;
-  font-size: 18px;         
-  text-align: center;      
-  letter-spacing: 0.5px;
-  width: 100%;
+.curriculum-table td.num {
+  text-align: center;
 }
 
-/* ==========================================
-   SEMESTER SUBBARS (RESTORED COLOR & BOX)
-========================================== */
-.semester-sub-bar {
-  background: #e8f5e9; /* Reverted back to the original light tinted green overlay color */
-  padding: 12px 14px;
+.curriculum-table td.grade {
+  text-align: center;
+  font-weight: 500;
+}
+
+.code-cell {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f2933;
+}
+
+.title-cell {
+  font-weight: 500;
+  color: #374151;
+  max-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* TOTALS ROW */
+.totals-row td {
+  background: #ffffff;
   font-weight: 600;
+  color: #1f2933;
+  border-bottom: none;
+}
+
+.totals-label {
+  text-align: right !important;
+  padding-right: 24px !important;
   font-size: 14px;
-  color: #111111;
-  text-align: center;
-  border-left: 1px solid #dcefd8;
-  border-right: 1px solid #dcefd8;
-  box-sizing: border-box;
+  color: #1f2933;
+  font-weight: 600;
 }
 
-/* Flex rows split columns framework layouts */
-.semester-split-row {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  width: 100%;
-  align-items: flex-start;
-  box-sizing: border-box;
-  margin-top: 8px;
+.totals-val {
+  font-size: 15px;
+  color: #1f2933;
+  font-weight: 600;
 }
 
-.semester-column {
-  flex: 1;
-  min-width: 0; /* Prevents text overflow rules from forcing layout expansion */
-  display: flex;
-  flex-direction: column;
-}
-
+/* EMPTY STATE */
 .audit-empty-state {
-  padding: 40px;
+  padding: 24px 16px;
   text-align: center;
-  color: #64748b;
+  color: #6b7280;
   background: #ffffff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   margin-top: 18px;
-}
-
-.grades-empty {
-  text-align: center;
-  padding: 24px 16px !important;
-  color: #94a3b8;
   font-size: 15px;
 }
 
@@ -268,126 +241,20 @@
   }
 }
 
-/* ==========================================
-   RESPONSIVE LAYOUT REDESIGN
-========================================== */
-
-/* Desktop & Large Tablets: Keep your side-by-side view */
-@media (min-width: 1025px) {
-  .semester-split-row {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    width: 100%;
-    align-items: flex-start;
-    box-sizing: border-box;
-    margin-top: 8px;
-  }
-
-  .semester-column {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
+/* =========================================
+   MEDIA QUERY MATRIX RESPONSIVE OVERRIDES
+========================================= */
+@media (max-width: 992px) {
+  .curriculum-container { padding: 20px 18px; }
+  .page-title { font-size: 20px; }
+  .curriculum-note { font-size: 13px; }
+  .curriculum-table th, .curriculum-table td { font-size: 14px; padding: 12px 14px; }
 }
 
-/* Mobile & Small Tablets: Transition to a stacked, high-readability card layout */
-@media (max-width: 1024px) {
-  .curriculum-container {
-    padding: 16px 14px;
-    width: 100%;
-    overflow-x: hidden; /* Strongly prevents the whole web viewport from swaying left/right */
-    box-sizing: border-box;
-  }
-
-  .curriculum-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    width: 100%;
-  }
-  
-  .page-title {
-    font-size: 22px;
-  }
-
-  .curriculum-note {
-    font-size: 13px;
-    margin-top: 4px;
-    line-height: 1.4;
-  }
-
-  .curriculum-year-group {
-    width: 100%;
-    margin-top: 20px;
-    box-sizing: border-box;
-  }
-
-  .school-year-banner {
-    font-size: 16px;
-    padding: 12px 0 4px;
-    width: 100%;
-    border-bottom: 2px solid #e2e8f0; /* Soft underlying rule for context grounding */
-  }
-
-  /* REARRANGEMENT: Stacks 1st Sem and 2nd Sem sequentially into 100% full-width blocks */
-  .semester-split-row {
-    display: flex;
-    flex-direction: column;
-    gap: 24px; /* Distinct visual break between the semester tables */
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 12px;
-  }
-
-  .semester-column {
-    width: 100%;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
-
-  .semester-sub-bar {
-    padding: 10px 14px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 6px 6px 0 0; /* Rounds the top headers for look parity */
-  }
-
-  /* Isolate swiping strictly within each independent full-width table card wrapper */
-  .curriculum-table-wrapper {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto; 
-    display: block;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    border-radius: 0 0 6px 6px;
-    border: 1px solid #e5e7eb;
-    border-top: none; /* Blends seamlessly directly under your header block tint */
-    -webkit-overflow-scrolling: touch; 
-  }
-
-  .curriculum-table {
-    min-width: 580px; /* Restores pristine column width allocations inside the localized scroll tracks */
-    width: 100%;
-  }
-
-  .curriculum-table th, 
-  .curriculum-table td {
-    padding: 12px 14px;
-    font-size: 14px; /* Balanced mobile typographic sizing */
-  }
-  
-  .col-grade,
-  .col-code,
-  .col-num {
-    width: auto;
-  }
-
-  .grades-empty {
-    padding: 20px 16px !important;
-  }
+@media (max-width: 768px) {
+  .curriculum-container { padding: 18px 14px; }
+  .curriculum-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .curriculum-note { display: none; }
+  .curriculum-table-wrapper { margin-bottom: 24px; }
+  .curriculum-table { min-width: 580px; }
 }

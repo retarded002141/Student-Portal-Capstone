@@ -29,8 +29,7 @@ const convertToNumberGrade = (raw) => {
 };
 
 export default function Title_audit() {
-  const [backendGrades, setBackendGrades] = useState({});
-  const [backendSchedules, setBackendSchedules] = useState({});
+  const [gradesData, setGradesData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -50,10 +49,10 @@ export default function Title_audit() {
     elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, [backendGrades, backendSchedules, isLoading]);
+  }, [gradesData, isLoading]);
 
   useEffect(() => {
-    const fetchAuditData = async () => {
+    const fetchAuditGrades = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
         window.location.href = "/";
@@ -61,116 +60,53 @@ export default function Title_audit() {
       }
 
       try {
-        const [gradesRes, scheduleRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/student/grades`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_BASE_URL}/api/student/schedule`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const response = await fetch(`${API_BASE_URL}/api/student/grades`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        if (gradesRes.ok) {
-          const gradesData = await gradesRes.json();
-          if (gradesData.grades) setBackendGrades(gradesData.grades);
-        }
-
-        if (scheduleRes.ok) {
-          const scheduleData = await scheduleRes.json();
-          if (scheduleData.schedules) setBackendSchedules(scheduleData.schedules);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.grades) {
+            setGradesData(data.grades);
+          }
         }
       } catch (error) {
-        console.error("Cannot connect to backend matrices for Title Audit updates.");
+        console.error("Cannot connect to grades server for Title Audit.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchAuditData();
+    fetchAuditGrades();
   }, []);
 
-  const calculateSemesterUnits = (rows = []) => {
-    return rows.reduce((acc, r) => acc + Number(r.units || 0), 0);
+  // Filter terms to keep only subjects that have a valid final grade
+  const gradedTermsList = useMemo(() => {
+    const terms = Object.keys(gradesData);
+
+    const filtered = {};
+    terms.forEach((termKey) => {
+      const list = gradesData[termKey] || [];
+      const gradedOnly = list.filter(
+        (sub) => sub.final && sub.final !== "--"
+      );
+
+      if (gradedOnly.length > 0) {
+        filtered[termKey] = gradedOnly;
+      }
+    });
+
+    return filtered;
+  }, [gradesData]);
+
+  const calculateTermUnits = (subjects = []) => {
+    return subjects.reduce((sum, item) => sum + Number(item.units || 0), 0);
   };
-
-  const mergedAuditData = useMemo(() => {
-    const allTerms = Array.from(
-      new Set([...Object.keys(backendSchedules), ...Object.keys(backendGrades)])
-    );
-
-    const merged = {};
-
-    allTerms.forEach((termKey) => {
-      const schedSubjects = backendSchedules[termKey]?.subjects || [];
-      const gradeSubjects = backendGrades[termKey] || [];
-
-      const subjectMap = new Map();
-
-      schedSubjects.forEach((sub) => {
-        const code = (sub.code || "").toUpperCase();
-        if (!subjectMap.has(code)) {
-          subjectMap.set(code, {
-            code: sub.code,
-            title: sub.title,
-            units: sub.units,
-            final: "--",
-          });
-        }
-      });
-
-      gradeSubjects.forEach((gradeSub) => {
-        const code = (gradeSub.code || "").toUpperCase();
-        if (subjectMap.has(code)) {
-          subjectMap.get(code).final = gradeSub.final;
-        } else {
-          subjectMap.set(code, {
-            code: gradeSub.code,
-            title: gradeSub.title,
-            units: gradeSub.units,
-            final: gradeSub.final,
-          });
-        }
-      });
-
-      merged[termKey] = Array.from(subjectMap.values());
-    });
-
-    return merged;
-  }, [backendGrades, backendSchedules]);
-
-  const groupedBySchoolYear = useMemo(() => {
-    const groups = {};
-
-    Object.keys(mergedAuditData).forEach((termKey) => {
-      const syMatch = termKey.match(/(\d{4})\s*-\s*(\d{4})/);
-      const syKey = syMatch ? `SY ${syMatch[1]}-${syMatch[2]}` : "Other Academic Terms";
-      const lowerKey = termKey.toLowerCase();
-      const subjects = mergedAuditData[termKey] || [];
-
-      if (!groups[syKey]) {
-        groups[syKey] = { firstSem: [], secondSem: [] };
-      }
-
-      if (lowerKey.includes("1st") || lowerKey.includes("first")) {
-        groups[syKey].firstSem = [...groups[syKey].firstSem, ...subjects];
-      } else if (lowerKey.includes("2nd") || lowerKey.includes("second")) {
-        groups[syKey].secondSem = [...groups[syKey].secondSem, ...subjects];
-      } else {
-        groups[syKey].firstSem = [...groups[syKey].firstSem, ...subjects];
-      }
-    });
-
-    return groups;
-  }, [mergedAuditData]);
-
-  const sortedSchoolYears = useMemo(() => {
-    return Object.keys(groupedBySchoolYear).sort();
-  }, [groupedBySchoolYear]);
 
   if (isLoading) {
     return (
       <main className="curriculum-container">
-        <h2 className="page-title">Title Audit</h2>
+        <h2 className="page-title">Title Audit Report</h2>
         <div className="audit-loading-card">
           <div className="audit-spinner-wrapper">
             <div className="audit-circular-spinner"></div>
@@ -186,146 +122,78 @@ export default function Title_audit() {
     );
   }
 
+  const termKeys = Object.keys(gradedTermsList);
+
   return (
     <main className="curriculum-container">
       <div className="curriculum-header reveal-on-scroll">
         <div>
-          <h2 className="page-title">Title Audit</h2>
+          <h2 className="page-title">Title Audit Report</h2>
           <p className="curriculum-note">
             Printed or screenshot copies of this title audit are unofficial. For an official copy, please go to the Registrar’s Office.
           </p>
         </div>
       </div>
 
-      {sortedSchoolYears.length > 0 ? (
-        sortedSchoolYears.map((syKey) => {
-          const { firstSem, secondSem } = groupedBySchoolYear[syKey];
-          const firstTotals = calculateSemesterUnits(firstSem);
-          const secondTotals = calculateSemesterUnits(secondSem);
+      {termKeys.length > 0 ? (
+        termKeys.map((termLabel) => {
+          const subjects = gradedTermsList[termLabel] || [];
+          const totalUnits = calculateTermUnits(subjects);
 
           return (
-            <div className="curriculum-year-group reveal-on-scroll" key={syKey}>
-              <div className="school-year-banner">{syKey}</div>
+            <div className="curriculum-year-group reveal-on-scroll" key={termLabel}>
+              <div className="school-year-banner">{termLabel}</div>
 
-              <div className="semester-split-row">
-                <div className="semester-column">
-                  <div className="semester-sub-bar">1st Semester</div>
-                  <div className="curriculum-table-wrapper">
-                    <table className="curriculum-table">
-                      <thead>
-                        <tr>
-                          <th className="col-code">CODE</th>
-                          <th className="col-title">TITLE</th>
-                          <th className="col-num">UNITS</th>
-                          <th className="col-grade">GRADE</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {firstSem.length > 0 ? (
-                          firstSem.map((r, idx) => {
-                            const gradeDisplay = convertToNumberGrade(r.final);
-                            const isFailing = gradeDisplay === "5.00";
-                            return (
-                              <tr key={`${r.code}-${idx}`}>
-                                <td>{r.code}</td>
-                                <td className="title-cell" title={r.title}>
-                                  {r.title}
-                                </td>
-                                <td className="num">{r.units}</td>
-                                <td
-                                  className={`grade ${
-                                    gradeDisplay === "--" ? "red-dash" : "numeric-grade"
-                                  }`}
-                                  style={
-                                    isFailing ? { color: "#dc2626", fontWeight: "700" } : {}
-                                  }
-                                >
-                                  {gradeDisplay}
-                                </td>
-                              </tr>
-                            );
-                          })
-                        ) : (
-                          <tr>
-                            <td colSpan="4" className="grades-empty">
-                              No subjects taken or scheduled.
-                            </td>
-                          </tr>
-                        )}
-                        {firstSem.length > 0 && (
-                          <tr className="totals-row">
-                            <td colSpan={2}></td>
-                            <td className="num">{firstTotals}</td>
-                            <td></td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+              <div className="curriculum-table-wrapper">
+                <table className="curriculum-table">
+                  <thead>
+                    <tr>
+                      <th className="col-code">Subject Code</th>
+                      <th className="col-title">Subject Description</th>
+                      <th className="col-num">No. of Units</th>
+                      <th className="col-grade">Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {subjects.map((item, idx) => {
+                      const gradeDisplay = convertToNumberGrade(item.final);
+                      const isFailing = gradeDisplay === "5.00";
 
-                <div className="semester-column">
-                  <div className="semester-sub-bar">2nd Semester</div>
-                  <div className="curriculum-table-wrapper">
-                    <table className="curriculum-table">
-                      <thead>
-                        <tr>
-                          <th className="col-code">CODE</th>
-                          <th className="col-title">TITLE</th>
-                          <th className="col-num">UNITS</th>
-                          <th className="col-grade">GRADE</th>
+                      return (
+                        <tr key={`${item.code}-${idx}`}>
+                          <td className="code-cell"><strong>{item.code}</strong></td>
+                          <td className="title-cell" title={item.title}>
+                            {item.title}
+                          </td>
+                          <td className="num">{item.units}</td>
+                          <td
+                            className={`grade ${
+                              gradeDisplay === "--" ? "red-dash" : "numeric-grade"
+                            }`}
+                            style={
+                              isFailing ? { color: "#dc2626", fontWeight: "700" } : {}
+                            }
+                          >
+                            {gradeDisplay}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {secondSem.length > 0 ? (
-                          secondSem.map((r, idx) => {
-                            const gradeDisplay = convertToNumberGrade(r.final);
-                            const isFailing = gradeDisplay === "5.00";
-                            return (
-                              <tr key={`${r.code}-${idx}`}>
-                                <td>{r.code}</td>
-                                <td className="title-cell" title={r.title}>
-                                  {r.title}
-                                </td>
-                                <td className="num">{r.units}</td>
-                                <td
-                                  className={`grade ${
-                                    gradeDisplay === "--" ? "red-dash" : "numeric-grade"
-                                  }`}
-                                  style={
-                                    isFailing ? { color: "#dc2626", fontWeight: "700" } : {}
-                                  }
-                                >
-                                  {gradeDisplay}
-                                </td>
-                              </tr>
-                            );
-                          })
-                        ) : (
-                          <tr>
-                            <td colSpan="4" className="grades-empty">
-                              No subjects taken or scheduled.
-                            </td>
-                          </tr>
-                        )}
-                        {secondSem.length > 0 && (
-                          <tr className="totals-row">
-                            <td colSpan={2}></td>
-                            <td className="num">{secondTotals}</td>
-                            <td></td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                      );
+                    })}
+
+                    <tr className="totals-row">
+                      <td colSpan={2} className="totals-label">Total Units</td>
+                      <td className="num totals-val">{totalUnits}</td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           );
         })
       ) : (
         <div className="audit-empty-state reveal-on-scroll">
-          No historical grades or curriculum tracking details available for this profile record.
+          No graded subjects recorded yet in your student profile history.
         </div>
       )}
     </main>
