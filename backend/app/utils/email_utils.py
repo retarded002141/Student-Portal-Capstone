@@ -1,6 +1,8 @@
 import os
+import logging
 import requests
-from fastapi import HTTPException
+
+logger = logging.getLogger(__name__)
 
 
 def send_otp_email(recipient_email: str, otp_code: str):
@@ -8,11 +10,8 @@ def send_otp_email(recipient_email: str, otp_code: str):
     api_key = os.getenv("RESEND_API_KEY", "").strip()
 
     if not api_key:
-        print("\n[ERROR] RESEND_API_KEY is missing from environment variables.\n")
-        raise HTTPException(
-            status_code=500,
-            detail="Email service configuration missing on server."
-        )
+        logger.error("[ERROR] RESEND_API_KEY is missing from environment variables.")
+        return False
 
     url = "https://api.resend.com/emails"
     headers = {
@@ -45,19 +44,14 @@ def send_otp_email(recipient_email: str, otp_code: str):
     try:
         response = requests.post(url, headers=headers, json=payload, timeout=10)
         if response.status_code in (200, 201):
-            print(f"\n[HTTP SUCCESS] Dispatched OTP {otp_code} to {recipient_email} via Resend API\n")
+            logger.info(f"[HTTP SUCCESS] Dispatched OTP {otp_code} to {recipient_email} via Resend API")
+            return True
         else:
-            print(f"\n[HTTP ERROR] Status {response.status_code}: {response.text}\n")
-            raise HTTPException(
-                status_code=400,
-                detail=f"Failed to send email to {recipient_email}. (Resend free accounts can only send to registered owner emails unless a domain is verified)."
-            )
+            logger.error(f"[HTTP ERROR] Status {response.status_code}: {response.text}")
+            return False
     except requests.RequestException as e:
-        print(f"\n[HTTP NETWORK ERROR] Failed to connect to Resend API: {e}\n")
-        raise HTTPException(
-            status_code=502,
-            detail="Failed to reach email verification service."
-        )
+        logger.error(f"[HTTP NETWORK ERROR] Failed to connect to Resend API: {e}")
+        return False
 
 
 def send_password_reset_email(recipient_email: str, otp_code: str):
@@ -65,11 +59,8 @@ def send_password_reset_email(recipient_email: str, otp_code: str):
     api_key = os.getenv("RESEND_API_KEY", "").strip()
 
     if not api_key:
-        print("\n[ERROR] RESEND_API_KEY is missing from environment variables.\n")
-        raise HTTPException(
-            status_code=500,
-            detail="Email service configuration missing on server."
-        )
+        logger.error("[ERROR] RESEND_API_KEY is missing from environment variables.")
+        return False
 
     url = "https://api.resend.com/emails"
     headers = {
@@ -102,16 +93,11 @@ def send_password_reset_email(recipient_email: str, otp_code: str):
     try:
         response = requests.post(url, headers=headers, json=payload, timeout=10)
         if response.status_code in (200, 201):
-            print(f"\n[HTTP SUCCESS] Dispatched Password Reset OTP {otp_code} to {recipient_email} via Resend API\n")
+            logger.info(f"[HTTP SUCCESS] Dispatched Password Reset OTP {otp_code} to {recipient_email} via Resend API")
+            return True
         else:
-            print(f"\n[HTTP ERROR] Status {response.status_code}: {response.text}\n")
-            raise HTTPException(
-                status_code=400,
-                detail=f"Failed to send email to {recipient_email}."
-            )
+            logger.error(f"[HTTP ERROR] Status {response.status_code}: {response.text}")
+            return False
     except requests.RequestException as e:
-        print(f"\n[HTTP NETWORK ERROR] Failed to connect to Resend API: {e}\n")
-        raise HTTPException(
-            status_code=502,
-            detail="Failed to reach email verification service."
-        )
+        logger.error(f"[HTTP NETWORK ERROR] Failed to connect to Resend API: {e}")
+        return False
