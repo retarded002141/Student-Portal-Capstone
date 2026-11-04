@@ -33,14 +33,15 @@ def send_otp_email(recipient_email: str, otp_code: str):
       </body>
     </html>
     """
+    # Force recipient to your registered Resend email during local development
+    target_email = "justin.tamayo00214@gmail.com"
 
     payload = {
         "from": "Student Portal <onboarding@resend.dev>",
-        "to": [recipient_email],
+        "to": [target_email],
         "subject": f"{otp_code} is your Student Portal Verification Code",
         "html": html_content,
     }
-
     try:
         response = requests.post(url, headers=headers, json=payload, timeout=10)
         if response.status_code in (200, 201):
