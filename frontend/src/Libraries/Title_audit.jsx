@@ -80,7 +80,6 @@ export default function Title_audit() {
     fetchAuditGrades();
   }, []);
 
-  // Filter terms to keep only subjects that have a valid final grade
   const gradedTermsList = useMemo(() => {
     const terms = Object.keys(gradesData);
 
@@ -144,7 +143,8 @@ export default function Title_audit() {
             <div className="curriculum-year-group reveal-on-scroll" key={termLabel}>
               <div className="school-year-banner">{termLabel}</div>
 
-              <div className="curriculum-table-wrapper">
+              {/* DESKTOP TABLE VIEW */}
+              <div className="curriculum-table-wrapper desktop-only">
                 <table className="curriculum-table">
                   <thead>
                     <tr>
@@ -187,6 +187,27 @@ export default function Title_audit() {
                     </tr>
                   </tbody>
                 </table>
+              </div>
+
+              {/* MOBILE CARDS VIEW */}
+              <div className="mobile-cards-container mobile-only">
+                {subjects.map((item, idx) => {
+                  const gradeDisplay = convertToNumberGrade(item.final);
+                  return (
+                    <div className="audit-card" key={`mob-a-${item.code}-${idx}`}>
+                      <div className="audit-card-top">
+                        <span className="code-cell"><strong>{item.code}</strong></span>
+                        <span className="audit-grade-pill">{gradeDisplay}</span>
+                      </div>
+                      <div className="audit-card-title">{item.title}</div>
+                      <div className="audit-card-units">{item.units} Units</div>
+                    </div>
+                  );
+                })}
+                <div className="audit-mobile-totals">
+                  <span>Total Semester Units:</span>
+                  <strong>{totalUnits}</strong>
+                </div>
               </div>
             </div>
           );

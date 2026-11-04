@@ -177,7 +177,8 @@ export default function Class_schedule() {
         </div>
       </div>
 
-      <div className="schedule-table-wrapper reveal-on-scroll delay-1">
+      {/* DESKTOP TABLE VIEW */}
+      <div className="schedule-table-wrapper desktop-only reveal-on-scroll delay-1">
         <table className="schedule-table">
           <thead>
             <tr>
@@ -228,6 +229,43 @@ export default function Class_schedule() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* MOBILE CARDS VIEW */}
+      <div className="mobile-cards-container mobile-only">
+        {groupedSubjects.map((subject, index) => (
+          <div className="schedule-card" key={`mob-${subject.code}-${index}`}>
+            <div className="card-top-row">
+              <span className="course-code">({subject.code})</span>
+              <span className="card-units-badge">{subject.units} Units</span>
+            </div>
+            <h3 className="card-title">{subject.title}</h3>
+
+            <div className="card-details-grid">
+              <div className="detail-item">
+                <span className="detail-label">Schedule:</span>
+                <span className="detail-value highlight">
+                  {subject.schedules.join(" | ")}
+                </span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Room:</span>
+                <span className="detail-value">{subject.rooms.join(", ")}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Section:</span>
+                <span className="detail-value">{subject.sections.join(", ")}</span>
+              </div>
+              <div className="detail-item full-width">
+                <span className="detail-label">Professor:</span>
+                <span className="detail-value">
+                  {subject.prof}
+                  <small className="card-email">{subject.email}</small>
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </main>
   );

@@ -230,7 +230,8 @@ export default function Grades() {
         </div>
       </div>
 
-      <div className="grades-table-wrapper reveal-on-scroll delay-1">
+      {/* DESKTOP TABLE VIEW */}
+      <div className="grades-table-wrapper desktop-only reveal-on-scroll delay-1">
         <table className="grades-table">
           <thead>
             <tr>
@@ -273,6 +274,43 @@ export default function Grades() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* MOBILE CARDS VIEW */}
+      <div className="mobile-cards-container mobile-only">
+        {combinedRows.map((r, idx) => (
+          <div className="grades-card" key={`mob-g-${r.code}-${idx}`}>
+            <div className="card-top-row">
+              <span className="course-code">({r.code})</span>
+              <span className="card-units-badge">{r.units} Units</span>
+            </div>
+            <h3 className="card-title">{r.title}</h3>
+
+            <div className="grades-breakdown-row">
+              <div className="grade-pill">
+                <span className="pill-label">Prelim</span>
+                <span className="pill-val">{r.prelim}</span>
+              </div>
+              <div className="grade-pill">
+                <span className="pill-label">Midterm</span>
+                <span className="pill-val">{r.midterm}</span>
+              </div>
+              <div className="grade-pill">
+                <span className="pill-label">Pre-final</span>
+                <span className="pill-val">{r.prefinal}</span>
+              </div>
+              <div className="grade-pill final">
+                <span className="pill-label">Final</span>
+                <span className="pill-val">{r.final}</span>
+              </div>
+            </div>
+
+            <div className="prof-footer-row">
+              <span className="prof-label">Professor:</span>
+              <span className="prof-val">{r.prof}</span>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="grades-summary reveal-on-scroll delay-2">
