@@ -123,8 +123,10 @@
 ========================================= */
 @media (max-width: 768px) {
   .curriculum-container { padding: 18px 14px; }
-  .curriculum-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .curriculum-note { display: none; }
+  .curriculum-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  
+  /* PRESERVED FOR MOBILE VIEW */
+  .curriculum-note { display: block; font-size: 13px; line-height: 1.45; margin-top: 4px; }
 
   .desktop-only { display: none !important; }
   .mobile-only { display: flex !important; flex-direction: column; gap: 10px; margin-top: 10px; }
