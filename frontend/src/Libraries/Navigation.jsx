@@ -646,7 +646,6 @@ function Navigation() {
                 <img src={iitiLogo} alt="IITI Logo" />
                 <div className="menuBrandText">
                   <div className="menuTitle">IITI Student Portal</div>
-                  <div className="menuSubtitle">Navigation</div>
                 </div>
               </div>
             </div>
