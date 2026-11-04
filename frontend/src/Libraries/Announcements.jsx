@@ -149,8 +149,8 @@ function AnnouncementCarousel({ items, loading, onOpen }) {
   if (loading) {
     return (
       <div className="ann-loading-grid">
-        {[1, 2, 3].map((num) => (
-          <div className="ann-skeleton-card" key={num}>
+        {Array.from({ length: visibleCards }).map((_, idx) => (
+          <div className="ann-skeleton-card" key={idx}>
             <div className="ann-skeleton-image">
               <div className="ann-circular-spinner"></div>
             </div>

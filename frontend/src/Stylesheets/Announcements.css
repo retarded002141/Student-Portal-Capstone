@@ -251,41 +251,6 @@
 }
 
 /* =====================================================
-   READ-ONLY ANNOUNCEMENT MODAL STYLES (MATCHES ADMIN)
-===================================================== */
-.annModalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.annModal {
-  background: #ffffff;
-  width: 100%;
-  max-width: 580px;
-  max-height: 90vh;
-  border-radius: 14px;
-  padding: 24px;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-sizing: border-box;
-  animation: annModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* =====================================================
    SKELETON CARDS & SPINNER ANIMATION
 ===================================================== */
 .ann-loading-grid {
@@ -304,6 +269,7 @@
 @media (max-width: 768px) {
   .ann-loading-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
@@ -376,6 +342,41 @@
   100% {
     background-position: -200% 0;
   }
+}
+
+/* =====================================================
+   READ-ONLY ANNOUNCEMENT MODAL STYLES
+===================================================== */
+.annModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.annModal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  border-radius: 14px;
+  padding: 24px;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  animation: annModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes annModalPop {
@@ -474,7 +475,9 @@
   white-space: pre-line;
 }
 
-/* Mobile view horizontal swipe layout (768px and down) */
+/* =====================================================
+   MOBILE VIEW LAYOUT (768px AND DOWN)
+===================================================== */
 @media (max-width: 768px) {
   .announcements-page {
     padding: 24px 16px 40px;
@@ -505,7 +508,7 @@
     gap: 12px;
   }
 
-  /* 85% width allows adjacent card 'cheeks' to peek through on screen edges */
+  /* Allow adjacent card edges to peek through on screen sides */
   .carousel-card {
     flex: 0 0 85% !important;
     scroll-snap-align: center;
