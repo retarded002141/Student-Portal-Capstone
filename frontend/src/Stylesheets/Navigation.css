@@ -7,7 +7,6 @@
   top: 0;
   z-index: 1000;
   box-sizing: border-box;
-  /* Add smooth transition for scroll hide/show */
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -19,20 +18,20 @@
   align-items: center;
   justify-content: space-between;
   min-height: 52px;
-  padding: 0 40px; /* Increased side padding for a premium look */
+  padding: 0 40px;
   gap: 32px;
   box-sizing: border-box;
 }
 
 .nav-list {
   list-style: none;
-  display: flex; /* Flex layout allows nodes to scale dynamically */
+  display: flex;
   align-items: center;
   margin: 0;
   padding: 0;
-  gap: 40px; /* Increased gap spacing to give components breathing room */
-  position: relative; /* Crucial context container for the absolute indicator path */
-  flex: 1; /* Automatically extends to occupy the layout balance */
+  gap: 40px;
+  position: relative;
+  flex: 1;
 }
 
 .nav-list-item {
@@ -50,7 +49,7 @@
   font-size: 16px;
   font-weight: 600;
   color: #545454;
-  padding: 16px 8px; /* Safe padding context to increase hit targets */
+  padding: 16px 8px;
   white-space: nowrap;
   transition: color 0.2s ease;
 }
@@ -70,11 +69,10 @@
   height: 4px;
   background: #2e522a;
   border-radius: 999px;
-  /* Animates left translation and width adjustments beautifully */
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
               width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
               opacity 0.2s ease;
-  pointer-events: none; /* Prevents interrupting click interactions */
+  pointer-events: none;
 }
 
 /* =======================================================
@@ -115,8 +113,8 @@
   align-items: center;
   justify-content: center;
   padding-left: 16px;
-  border-left: 1px solid #e2e8f0; /* Soft visual separation line */
-  gap: 16px; /* Space between notification icon and avatar image button */
+  border-left: 1px solid #e2e8f0;
+  gap: 16px;
 }
 
 .nav-actions {
@@ -126,8 +124,8 @@
 }
 
 .notif-btn {
-  background: transparent; /* Removes the old white circle background */
-  border: none;            /* Removes the circular border ring */
+  background: transparent;
+  border: none;
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -143,7 +141,7 @@
 
 .notif-btn:hover,
 .notif-btn.active {
-  color: #2e522a; /* Smoothly changes the icon color to match the theme */
+  color: #2e522a;
 }
 
 .notif-badge {
@@ -216,14 +214,14 @@
 .notif-panel {
   position: absolute;
   top: 50px;
-  right: -8px;
-  width: 360px;
+  right: 0px;
+  width: 320px;
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   border: 1px solid #e2e8f0;
   overflow: hidden;
-  z-index: 150;
+  z-index: 1050;
   transform-origin: top right;
   animation: popOver 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -482,7 +480,6 @@
   background-color: #fafbfc;
 }
 
-/* USER INFO CARD IN DROPDOWN HEADER */
 .profile-card-user {
   display: flex;
   align-items: center;
@@ -552,7 +549,6 @@
   margin-top: 2px;
 }
 
-/* STATUS PILL BADGE IN DROPDOWN CARD */
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -638,11 +634,8 @@
   color: #991b1b;
 }
 
-/* =======================================================
-   MOBILE / TABLET STYLING OVERRIDES
-======================================================= */
 .mobile-nav {
-  display: none; /* Hide on desktop by default */
+  display: none;
   position: sticky;
   top: 0;
   z-index: 1001;
@@ -719,16 +712,16 @@
     height: 40px;
   }
   
+  /* ALIGNS NOTIFICATION PANEL UNDER BELL ICON ON MOBILE/TABLET */
   .notif-panel {
-    position: fixed !important;
-    top: 68px !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-    width: calc(100vw - 24px) !important;
-    max-width: 360px !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
-    transform-origin: top center !important;
+    position: absolute !important;
+    top: 52px !important;
+    right: -45px !important;
+    left: auto !important;
+    transform: none !important;
+    width: min(320px, calc(100vw - 32px)) !important;
+    z-index: 1002 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
   }
   
   .profile-panel {
@@ -740,15 +733,12 @@
   }
 }
 
-/* =======================================================
-   MOBILE DRAWER OVERLAY WINDOWS
-======================================================= */
 .mobileMenuOverlay {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  height: 100dvh; /* Dynamic viewport height fix for mobile browsers */
+  height: 100dvh;
   background: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(2px);
   z-index: 9999;
@@ -765,7 +755,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow-y: auto; /* Enables smooth scrolling if links overflow screen height */
+  overflow-y: auto;
   animation: slideMenu 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -833,9 +823,6 @@
   color: #2e522a;
 }
 
-/* =======================================================
-   RED NOTIFICATION DOT FOR ACTIVE EVALUATION BUTTON
-======================================================= */
 .eval-nav-link {
   position: relative;
 }
@@ -852,7 +839,7 @@
   right: -2px;
   width: 8px;
   height: 8px;
-  background-color: #ef4444; /* Bright Red */
+  background-color: #ef4444;
   border-radius: 50%;
   border: 1.5px solid #ffffff;
   box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4);
@@ -879,9 +866,6 @@
   }
 }
 
-/* =======================================================
-   ANIMATIONS DISPATCHING MATRICES
-======================================================= */
 @keyframes popOver {
   from { opacity: 0; transform: scale(0.96) translateY(-4px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
