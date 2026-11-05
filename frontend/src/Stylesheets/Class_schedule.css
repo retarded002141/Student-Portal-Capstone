@@ -206,6 +206,36 @@
 }
 
 /* =========================================
+   SIDEWAYS SCROLL INDICATOR / ANIMATED SCROLLBAR
+========================================= */
+
+/* WebKit-based browsers (Chrome, Safari, Edge) */
+.schedule-table-wrapper::-webkit-scrollbar {
+  height: 8px; /* Thicker height so the scrollbar is easy to see */
+}
+
+.schedule-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 0 0 8px 8px;
+}
+
+.schedule-table-wrapper::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.schedule-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #2e522a; /* Highlights green when interacted with */
+}
+
+/* Firefox horizontal scrollbar styling */
+.schedule-table-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+/* =========================================
    VISIBILITY UTILITIES
 ========================================= */
 

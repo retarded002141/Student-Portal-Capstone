@@ -199,6 +199,34 @@
 .gwa-label { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
 .gwa-value { font-size: 22px; font-weight: 700; }
 
+/* =========================================
+   SIDEWAYS SCROLL INDICATOR / ANIMATED SCROLLBAR
+========================================= */
+
+.grades-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.grades-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 0 0 8px 8px;
+}
+
+.grades-table-wrapper::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.grades-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #2e522a;
+}
+
+.grades-table-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
 /* VISIBILITY UTILITIES */
 .desktop-only { display: block; }
 .mobile-only { display: none; }
