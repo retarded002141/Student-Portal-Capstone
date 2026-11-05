@@ -7,6 +7,38 @@ import { API_BASE_URL } from "../axios";
 const EVAL_URL = "https://faculty-evaluation-iiti.vercel.app";
 const EVAL_API = "https://faculty-evaluation-jau8.onrender.com/api";
 
+// Helper function to format ISO timestamps dynamically into relative time
+const formatRelativeTime = (createdAt, fallbackTime) => {
+  if (!createdAt) return fallbackTime || "Just now";
+
+  try {
+    const createdDate = new Date(createdAt);
+    if (isNaN(createdDate.getTime())) return fallbackTime || "Just now";
+
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - createdDate) / 1000);
+
+    if (diffInSeconds < 30) return "Just now";
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+
+    return createdDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return fallbackTime || "Just now";
+  }
+};
+
 function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -432,7 +464,7 @@ function Navigation() {
                     <div className="notif-item-title">{n.title}</div>
                     <div className="notif-item-msg">{n.message}</div>
                     <div className="notif-item-meta">{n.meta}</div>
-                    <div className="notif-time">{n.time}</div>
+                    <div className="notif-time">{formatRelativeTime(n.createdAt, n.time)}</div>
                   </div>
                 </div>
               ))

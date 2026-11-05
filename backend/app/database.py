@@ -14,5 +14,8 @@ advising_collection = database["advisingrecords"]
 notifications_collection = database["notifications"]
 records_requests_collection = database["records_requests"]
 
+# Dedicated Student Notifications Collection
+studentsnotif_collection = database["studentsnotif"]
+
 # Announcements Collection (also in iiti_db)
 announcements_collection = database["announcements"]

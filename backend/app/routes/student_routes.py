@@ -15,6 +15,7 @@ from app.database import (
     curriculums_collection,
     advising_collection,
     announcements_collection,
+    studentsnotif_collection,
     database,
 )
 from app.utils.security import verify_password, hash_password
@@ -406,7 +407,6 @@ async def get_student_grades(authorization: str = Header(None)):
         raw_sy = str(g.get("academic_year") or g.get("schoolYear") or g.get("academicYear") or (student.get("schoolYear") if student else "2026-2027")).strip()
         raw_sem = str(g.get("semester") or (student.get("semester") if student else "1st")).strip()
 
-        # Check if subject is credited/transferred
         computed = g.get("computedGrades", {})
         raw_snapshots = g.get("rawSnapshots", {})
         status_val = str(g.get("status") or raw_snapshots.get("status") or "").lower()
@@ -590,7 +590,6 @@ async def update_request_status(payload: dict = Body(...)):
     if not student_number or not new_status:
         raise HTTPException(status_code=400, detail="Missing required parameters.")
 
-    # Find student
     student = await students_collection.find_one({
         "$or": [
             {"studentNumber": student_number},
@@ -618,32 +617,25 @@ async def update_request_status(payload: dict = Body(...)):
     requests[target_idx]["status"] = new_status
     requests[target_idx]["updatedAt"] = datetime.utcnow().isoformat()
 
-    # Update status in student document
+    await students_collection.update_one(
+        {"_id": student["_id"]},
+        {"$set": {"record_requests": requests}}
+    )
+
     if new_status.lower() == "ready for pickup":
         import uuid
+        now_utc = datetime.utcnow()
         new_notification = {
             "id": f"notif_{uuid.uuid4().hex[:8]}",
+            "studentNumber": str(student_number),
             "title": "Document Request Ready for Pickup",
             "message": f"Your requested {doc_type} is now ready for pickup at the Registrar's Office.",
             "meta": "System | Records Request",
-            "time": "Just now",
             "read": False,
             "link": "/Records_request",
-            "createdAt": datetime.utcnow().isoformat()
+            "createdAt": now_utc.isoformat()
         }
-
-        await students_collection.update_one(
-            {"_id": student["_id"]},
-            {
-                "$set": {"record_requests": requests},
-                "$push": {"notifications": {"$each": [new_notification], "$position": 0}}
-            }
-        )
-    else:
-        await students_collection.update_one(
-            {"_id": student["_id"]},
-            {"$set": {"record_requests": requests}}
-        )
+        await studentsnotif_collection.insert_one(new_notification)
 
     return {"message": f"Status updated to {new_status} and student notified."}
 
@@ -749,68 +741,62 @@ async def delete_record_admin(payload: dict = Body(...)):
 
 
 # =======================================================
-# 5. NOTIFICATIONS
+# 5. NOTIFICATIONS (STUDENTSNOTIF COLLECTION)
 # =======================================================
 @router.get("/notifications")
 async def get_student_notifications(authorization: str = Header(None)):
     student_num = get_student_number_from_token(authorization)
-    student = await students_collection.find_one({
-        "$or": [
-            {"studentNumber": str(student_num)},
-            {"student_number": str(student_num)},
-            {"username": str(student_num)}
-        ]
-    })
 
-    if not student:
-        raise HTTPException(status_code=404, detail="Student record not found.")
+    cursor = studentsnotif_collection.find(
+        {"studentNumber": str(student_num)}
+    ).sort("createdAt", -1)
+    
+    notifs = []
+    async for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        notifs.append(doc)
 
-    notifs = student.get("notifications")
-
-    if notifs is None:
+    if len(notifs) == 0:
+        now_utc = datetime.utcnow()
         welcome_notif = {
             "id": "notif_welcome",
+            "studentNumber": str(student_num),
             "title": "Welcome to BPC Student Portal!",
             "message": "You can view your enrolled class schedule, check grades, and submit document requests.",
             "meta": "System | Announcement",
-            "time": "Just now",
             "read": False,
             "link": "/",
-            "createdAt": datetime.utcnow()
+            "createdAt": now_utc.isoformat()
         }
-        await students_collection.update_one(
-            {"_id": student["_id"]},
-            {"$set": {"notifications": [welcome_notif]}}
-        )
+        await studentsnotif_collection.insert_one(welcome_notif)
+        welcome_notif["_id"] = str(welcome_notif.get("_id", ""))
         return {"notifications": [welcome_notif]}
 
     two_weeks_ago = datetime.utcnow() - timedelta(days=14)
     active_notifs = []
-    has_expired = False
+    expired_ids = []
 
     for n in notifs:
-        created_at = n.get("createdAt")
-        if not created_at:
+        created_at_raw = n.get("createdAt")
+        if not created_at_raw:
             active_notifs.append(n)
             continue
 
-        if isinstance(created_at, str):
-            try:
-                created_at = datetime.fromisoformat(created_at.replace("Z", "+00:00")).replace(tzinfo=None)
-            except Exception:
+        try:
+            if isinstance(created_at_raw, datetime):
+                dt_val = created_at_raw
+            else:
+                dt_val = datetime.fromisoformat(str(created_at_raw).replace("Z", "+00:00")).replace(tzinfo=None)
+
+            if dt_val >= two_weeks_ago:
                 active_notifs.append(n)
-                continue
-
-        if created_at >= two_weeks_ago:
+            else:
+                expired_ids.append(n.get("id"))
+        except Exception:
             active_notifs.append(n)
-        else:
-            has_expired = True
 
-    if has_expired:
-        await students_collection.update_one(
-            {"_id": student["_id"]},
-            {"$set": {"notifications": active_notifs}}
-        )
+    if expired_ids:
+        await studentsnotif_collection.delete_many({"id": {"$in": expired_ids}})
 
     return {"notifications": active_notifs}
 
@@ -818,27 +804,13 @@ async def get_student_notifications(authorization: str = Header(None)):
 @router.post("/notifications/read-all")
 async def mark_notifications_as_read(authorization: str = Header(None)):
     student_num = get_student_number_from_token(authorization)
-    student = await students_collection.find_one({
-        "$or": [
-            {"studentNumber": str(student_num)},
-            {"student_number": str(student_num)},
-            {"username": str(student_num)}
-        ]
-    })
 
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found.")
-
-    notifs = student.get("notifications", [])
-    for n in notifs:
-        n["read"] = True
-
-    await students_collection.update_one(
-        {"_id": student["_id"]},
-        {"$set": {"notifications": notifs}}
+    await studentsnotif_collection.update_many(
+        {"studentNumber": str(student_num), "read": False},
+        {"$set": {"read": True}}
     )
 
-    return {"message": "All notifications marked as read.", "notifications": notifs}
+    return {"message": "All notifications marked as read."}
 
 
 @router.post("/notifications/read/{notif_id}")
@@ -847,33 +819,13 @@ async def mark_single_notification_read(
     authorization: str = Header(None)
 ):
     student_num = get_student_number_from_token(authorization)
-    student = await students_collection.find_one({
-        "$or": [
-            {"studentNumber": str(student_num)},
-            {"student_number": str(student_num)},
-            {"username": str(student_num)}
-        ]
-    })
 
-    if not student:
-        raise HTTPException(status_code=404, detail="Student record not found.")
+    await studentsnotif_collection.update_one(
+        {"studentNumber": str(student_num), "id": str(notif_id)},
+        {"$set": {"read": True}}
+    )
 
-    notifs = student.get("notifications", [])
-    updated = False
-
-    for n in notifs:
-        if str(n.get("id")) == str(notif_id):
-            n["read"] = True
-            updated = True
-            break
-
-    if updated:
-        await students_collection.update_one(
-            {"_id": student["_id"]},
-            {"$set": {"notifications": notifs}}
-        )
-
-    return {"message": "Notification marked as read.", "notifications": notifs}
+    return {"message": "Notification marked as read."}
 
 
 # =======================================================
