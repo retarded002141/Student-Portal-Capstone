@@ -42,8 +42,8 @@ function Footer() {
         <div className="footer-contact">
           <h2>Contact Us</h2>
           <p>Email: emailngbtech@email.com</p>
-          <p>Phone: +63 012 345 6789</p>
-          <p>Address: Baliwag, Bulacan, Philippines</p>
+          <p>Phone: +63 numberngbtech</p>
+          <p>Address: addressngbtech</p>
         </div>
 
       </div>
