@@ -12,7 +12,12 @@ const formatRelativeTime = (createdAt, fallbackTime) => {
   if (!createdAt) return fallbackTime || "Just now";
 
   try {
-    const createdDate = new Date(createdAt);
+    // Append 'Z' if missing so JS parses it as UTC instead of local time
+    const isoString = (typeof createdAt === 'string' && !createdAt.endsWith('Z') && !createdAt.includes('+'))
+      ? `${createdAt}Z`
+      : createdAt;
+
+    const createdDate = new Date(isoString);
     if (isNaN(createdDate.getTime())) return fallbackTime || "Just now";
 
     const now = new Date();

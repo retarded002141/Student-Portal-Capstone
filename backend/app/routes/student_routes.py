@@ -756,21 +756,9 @@ async def get_student_notifications(authorization: str = Header(None)):
         doc["_id"] = str(doc["_id"])
         notifs.append(doc)
 
+    # Return empty list directly if no notifications exist for this student
     if len(notifs) == 0:
-        now_utc = datetime.utcnow()
-        welcome_notif = {
-            "id": "notif_welcome",
-            "studentNumber": str(student_num),
-            "title": "Welcome to BPC Student Portal!",
-            "message": "You can view your enrolled class schedule, check grades, and submit document requests.",
-            "meta": "System | Announcement",
-            "read": False,
-            "link": "/",
-            "createdAt": now_utc.isoformat()
-        }
-        await studentsnotif_collection.insert_one(welcome_notif)
-        welcome_notif["_id"] = str(welcome_notif.get("_id", ""))
-        return {"notifications": [welcome_notif]}
+        return {"notifications": []}
 
     two_weeks_ago = datetime.utcnow() - timedelta(days=14)
     active_notifs = []
@@ -799,33 +787,6 @@ async def get_student_notifications(authorization: str = Header(None)):
         await studentsnotif_collection.delete_many({"id": {"$in": expired_ids}})
 
     return {"notifications": active_notifs}
-
-
-@router.post("/notifications/read-all")
-async def mark_notifications_as_read(authorization: str = Header(None)):
-    student_num = get_student_number_from_token(authorization)
-
-    await studentsnotif_collection.update_many(
-        {"studentNumber": str(student_num), "read": False},
-        {"$set": {"read": True}}
-    )
-
-    return {"message": "All notifications marked as read."}
-
-
-@router.post("/notifications/read/{notif_id}")
-async def mark_single_notification_read(
-    notif_id: str,
-    authorization: str = Header(None)
-):
-    student_num = get_student_number_from_token(authorization)
-
-    await studentsnotif_collection.update_one(
-        {"studentNumber": str(student_num), "id": str(notif_id)},
-        {"$set": {"read": True}}
-    )
-
-    return {"message": "Notification marked as read."}
 
 
 # =======================================================
