@@ -1,7 +1,7 @@
 .records-request-container {
   padding: 24px 32px;
   min-height: 100vh;
-  background: #f8f8f8;
+  background: #f8faf8;
   box-sizing: border-box;
 }
 
@@ -14,7 +14,7 @@
 
 .records-page-title {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
   color: #1f2933;
 }
@@ -100,8 +100,9 @@
 }
 
 /* =========================================
-   CUSTOM DROPDOWN FRAMEWORK
+   STANDARDIZED DROPDOWN FRAMEWORK
 ========================================= */
+
 .records-select-wrap {
   position: relative;
   width: 100%;
@@ -115,8 +116,8 @@
   font-size: 15px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  background: #f9fafb;
-  color: #111;
+  background: #ffffff;
+  color: #1f2937;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -203,12 +204,13 @@
 .records-submit-btn:active { transform: scale(0.99); }
 
 .records-history-section { margin-top: 8px; }
-.records-history-title { font-size: 24px; font-weight: 600; margin: 0; color: #1f2933; }
+.records-history-title { font-size: 24px; font-weight: 700; margin: 0; color: #1f2933; }
 .records-history-note { margin-top: 4px; margin-bottom: 14px; font-size: 14px; color: #4b5563; }
 
 /* =========================================
-   DESKTOP TABLE STYLING
+   STANDARDIZED DESKTOP TABLE STYLING
 ========================================= */
+
 .records-table-wrapper {
   background: #ffffff;
   border-radius: 8px;
@@ -228,8 +230,8 @@
   padding: 14px 28px;
   text-align: left;
   font-size: 14px;
-  font-weight: 600;
-  color: #000000;
+  font-weight: 700;
+  color: #1f2933;
   border-bottom: 1px solid #dcefd8;
   white-space: nowrap;
 }
@@ -295,8 +297,9 @@
 /* =========================================
    COMPACT MOBILE CARDS
 ========================================= */
+
 @media (max-width: 768px) {
-  .records-request-container { padding: 16px 12px; }
+  .records-request-container { padding: 16px 12px; background: #f8faf8; }
   .records-form-card { padding: 16px 14px; margin-bottom: 20px; }
   .records-form .row-2-even { grid-template-columns: 1fr; gap: 12px; }
   .records-form .spacer-group { display: none; }
@@ -388,6 +391,7 @@
 /* =========================================
    MODALS
 ========================================= */
+
 .records-modal-overlay {
   position: fixed;
   inset: 0;

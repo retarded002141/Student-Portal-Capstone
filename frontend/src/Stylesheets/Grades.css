@@ -1,7 +1,7 @@
 .grades-page-container {
   padding: 24px 32px;
   min-height: 100vh;
-  background: #f8f8f8;
+  background: #f8faf8;
 }
 
 .grades-page-header {
@@ -15,7 +15,7 @@
 
 .page-title {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
   color: #1f2933;
 }
@@ -42,6 +42,10 @@
   letter-spacing: 0.5px;
 }
 
+/* =========================================
+   STANDARDIZED DROPDOWN FRAMEWORK
+========================================= */
+
 .grades-select-wrap {
   position: relative;
   width: 100%;
@@ -56,7 +60,7 @@
   border-radius: 8px;
   border: 1px solid #d1d5db;
   background-color: #ffffff;
-  color: #374151;
+  color: #1f2937;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -117,6 +121,10 @@
   color: #2e522a;
 }
 
+/* =========================================
+   STANDARDIZED DESKTOP TABLE
+========================================= */
+
 .grades-table-wrapper {
   background: #ffffff;
   border-radius: 8px;
@@ -139,8 +147,8 @@
   padding: 14px 20px;
   text-align: left;
   font-size: 14px;
-  font-weight: 600;
-  color: #000000;
+  font-weight: 700;
+  color: #1f2933;
   border-bottom: 1px solid #dcefd8;
   white-space: nowrap;
 }
@@ -199,11 +207,10 @@
    MOBILE CARDS LAYOUT
 ========================================= */
 @media (max-width: 768px) {
-  .grades-page-container { padding: 18px 14px; }
+  .grades-page-container { padding: 18px 14px; background: #f8faf8; }
   .grades-page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
   .academic-year-select-group { width: 100%; }
   
-  /* PRESERVED FOR MOBILE VIEW */
   .grades-note { display: block; font-size: 13px; line-height: 1.45; margin-top: 4px; }
 
   .desktop-only { display: none !important; }

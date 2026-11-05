@@ -1,7 +1,7 @@
 .curriculum-container {
   padding: 24px 32px;
   min-height: 100vh;
-  background: #f8f8f8;
+  background: #f8faf8;
 }
 
 .curriculum-header {
@@ -13,7 +13,7 @@
 
 .page-title {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
   color: #1f2933;
 }
@@ -33,13 +33,17 @@
   background: #e4f6e2;
   border-bottom: 1px solid #dcefd8;
   border-radius: 8px 8px 0 0;
-  color: #000000;
+  color: #1f2933;
   padding: 12px 20px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   text-align: center;
   box-sizing: border-box;
 }
+
+/* =========================================
+   STANDARDIZED DESKTOP TABLE
+========================================= */
 
 .curriculum-table-wrapper {
   background: #ffffff;
@@ -62,15 +66,15 @@
 .col-num { width: 15%; text-align: center; }
 .col-grade { width: 15%; text-align: center; }
 
-.curriculum-table thead { background-color: #ffffff; }
+.curriculum-table thead { background-color: #e4f6e2; }
 
 .curriculum-table th {
   padding: 14px 20px;
   text-align: left;
   font-size: 14px;
-  font-weight: 600;
-  color: #000000;
-  border-bottom: 1px solid #e5e7eb;
+  font-weight: 700;
+  color: #1f2933;
+  border-bottom: 1px solid #dcefd8;
   white-space: nowrap;
 }
 
@@ -122,10 +126,9 @@
    MOBILE CARDS LAYOUT
 ========================================= */
 @media (max-width: 768px) {
-  .curriculum-container { padding: 18px 14px; }
+  .curriculum-container { padding: 18px 14px; background: #f8faf8; }
   .curriculum-header { flex-direction: column; align-items: flex-start; gap: 12px; }
   
-  /* PRESERVED FOR MOBILE VIEW */
   .curriculum-note { display: block; font-size: 13px; line-height: 1.45; margin-top: 4px; }
 
   .desktop-only { display: none !important; }
