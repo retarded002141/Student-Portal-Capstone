@@ -406,13 +406,24 @@ async def get_student_grades(authorization: str = Header(None)):
         raw_sy = str(g.get("academic_year") or g.get("schoolYear") or g.get("academicYear") or (student.get("schoolYear") if student else "2026-2027")).strip()
         raw_sem = str(g.get("semester") or (student.get("semester") if student else "1st")).strip()
 
-        term_key = format_term_label(raw_sy, raw_sem)
-
-        section_id = g.get("section_id", "")
-        extracted_code = g.get("subject_code") or (section_id.split("-")[-1].upper() if "-" in section_id else "CC101")
-        meta = subject_meta_map.get(extracted_code.upper(), {"title": extracted_code, "units": 3})
-
+        # Check if subject is credited/transferred
         computed = g.get("computedGrades", {})
+        raw_snapshots = g.get("rawSnapshots", {})
+        status_val = str(g.get("status") or raw_snapshots.get("status") or "").lower()
+        equiv_val = str(computed.get("equivalent") or "").strip()
+        sec_val = str(g.get("section") or "").upper()
+
+        is_credited_subject = (
+            equiv_val.lower() == "credited" or
+            status_val == "credited" or
+            sec_val == "TRANSFEREE" or
+            raw_sy.lower() == "previous"
+        )
+
+        term_key = "Credited / Transferred Subjects" if is_credited_subject else format_term_label(raw_sy, raw_sem)
+
+        extracted_code = g.get("subject_code") or g.get("subjectCode") or (g.get("section_id", "").split("-")[-1].upper() if "-" in g.get("section_id", "") else "SUBJECT")
+        meta = subject_meta_map.get(extracted_code.upper(), {"title": extracted_code, "units": 3})
 
         def extract_grade_val(raw_obj, fallback_obj):
             if isinstance(raw_obj, dict):
@@ -423,24 +434,36 @@ async def get_student_grades(authorization: str = Header(None)):
                 return fallback_obj.get("value") or fallback_obj.get("grade") or fallback_obj.get("equivalent") or "--"
             return fallback_obj or "--"
 
-        prelim_val = extract_grade_val(computed.get("prelim"), g.get("prelim"))
-        midterm_val = extract_grade_val(computed.get("midterm"), g.get("midterm") or g.get("rawMid"))
-        prefinal_val = extract_grade_val(computed.get("prefinal"), g.get("prefinal") or g.get("rawPre"))
-        final_val = extract_grade_val(computed.get("final"), g.get("final") or g.get("rawFinal"))
-
-        if computed.get("equivalent"):
-            final_grade_str = f"{float(computed.get('equivalent')):.2f}"
+        if is_credited_subject:
+            final_grade_str = "Credited"
+            prelim_str = "--"
+            midterm_str = "--"
+            prefinal_str = "--"
         else:
-            final_grade_str = convert_percentage_to_number_grade(final_val)
+            prelim_val = extract_grade_val(computed.get("prelim"), g.get("prelim"))
+            midterm_val = extract_grade_val(computed.get("midterm"), g.get("midterm") or g.get("rawMid"))
+            prefinal_val = extract_grade_val(computed.get("prefinal"), g.get("prefinal") or g.get("rawPre"))
+            final_val = extract_grade_val(computed.get("final"), g.get("final") or g.get("rawFinal"))
+
+            if computed.get("equivalent") and equiv_val.replace('.', '', 1).isdigit():
+                final_grade_str = f"{float(computed.get('equivalent')):.2f}"
+            else:
+                final_grade_str = convert_percentage_to_number_grade(final_val)
+
+            prelim_str = convert_percentage_to_number_grade(prelim_val)
+            midterm_str = convert_percentage_to_number_grade(midterm_val)
+            prefinal_str = convert_percentage_to_number_grade(prefinal_val)
 
         row = {
             "code": extracted_code,
             "title": meta["title"],
             "units": meta["units"],
-            "prelim": convert_percentage_to_number_grade(prelim_val),
-            "midterm": convert_percentage_to_number_grade(midterm_val),
-            "prefinal": convert_percentage_to_number_grade(prefinal_val),
+            "prelim": prelim_str,
+            "midterm": midterm_str,
+            "prefinal": prefinal_str,
             "final": final_grade_str,
+            "equivalent": "Credited" if is_credited_subject else None,
+            "status": "credited" if is_credited_subject else "enrolled",
             "prof": g.get("profName", "--"),
             "email": g.get("profEmail", "--")
         }

@@ -41,6 +41,32 @@
   box-sizing: border-box;
 }
 
+
+
+/* =========================================
+   CREDITED SUBJECT STYLING ACCENTS
+========================================= */
+
+.credited-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.audit-grade-pill.credited {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
 /* =========================================
    STANDARDIZED DESKTOP TABLE
 ========================================= */

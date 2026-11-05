@@ -2,7 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import "../Stylesheets/Title_audit.css";
 import { API_BASE_URL } from "../axios";
 
-const convertToNumberGrade = (raw) => {
+const convertToNumberGrade = (item) => {
+  if (!item) return "--";
+
+  const isCredited =
+    (typeof item === "object" &&
+      (item.equivalent === "Credited" ||
+        item.status === "credited" ||
+        item.final === "Credited")) ||
+    item === "Credited";
+
+  if (isCredited) return "Credited";
+
+  const raw = typeof item === "object" ? item.final : item;
+
   if (raw === undefined || raw === null || raw === "" || raw === "--") {
     return "--";
   }
@@ -80,25 +93,35 @@ export default function Title_audit() {
     fetchAuditGrades();
   }, []);
 
-  const gradedTermsList = useMemo(() => {
-    const terms = Object.keys(gradesData);
+  const { creditedSubjects, semesterTerms } = useMemo(() => {
+    let credited = [];
+    const terms = {};
 
-    const filtered = {};
-    terms.forEach((termKey) => {
+    Object.keys(gradesData).forEach((termKey) => {
       const list = gradesData[termKey] || [];
-      const gradedOnly = list.filter(
-        (sub) => sub.final && sub.final !== "--"
-      );
 
-      if (gradedOnly.length > 0) {
-        filtered[termKey] = gradedOnly;
+      if (termKey.toLowerCase().includes("credited") || termKey.toLowerCase().includes("transferred")) {
+        credited = [...credited, ...list];
+      } else {
+        const validForAudit = list.filter((sub) => {
+          const isCred = sub.equivalent === "Credited" || sub.status === "credited" || sub.final === "Credited";
+          if (isCred) {
+            credited.push(sub);
+            return false;
+          }
+          return sub.final && sub.final !== "--";
+        });
+
+        if (validForAudit.length > 0) {
+          terms[termKey] = validForAudit;
+        }
       }
     });
 
-    return filtered;
+    return { creditedSubjects: credited, semesterTerms: terms };
   }, [gradesData]);
 
-  const calculateTermUnits = (subjects = []) => {
+  const calculateUnits = (subjects = []) => {
     return subjects.reduce((sum, item) => sum + Number(item.units || 0), 0);
   };
 
@@ -121,7 +144,9 @@ export default function Title_audit() {
     );
   }
 
-  const termKeys = Object.keys(gradedTermsList);
+  const termKeys = Object.keys(semesterTerms);
+  const totalCreditedUnits = calculateUnits(creditedSubjects);
+  const hasRecords = creditedSubjects.length > 0 || termKeys.length > 0;
 
   return (
     <main className="curriculum-container">
@@ -134,16 +159,11 @@ export default function Title_audit() {
         </div>
       </div>
 
-      {termKeys.length > 0 ? (
-        termKeys.map((termLabel) => {
-          const subjects = gradedTermsList[termLabel] || [];
-          const totalUnits = calculateTermUnits(subjects);
+      {hasRecords ? (
+        <>
+          {creditedSubjects.length > 0 && (
+            <div className="curriculum-year-group reveal-on-scroll">
 
-          return (
-            <div className="curriculum-year-group reveal-on-scroll" key={termLabel}>
-              <div className="school-year-banner">{termLabel}</div>
-
-              {/* DESKTOP TABLE VIEW */}
               <div className="curriculum-table-wrapper desktop-only">
                 <table className="curriculum-table">
                   <thead>
@@ -151,70 +171,134 @@ export default function Title_audit() {
                       <th className="col-code">Subject Code</th>
                       <th className="col-title">Subject Description</th>
                       <th className="col-num">No. of Units</th>
-                      <th className="col-grade">Grade</th>
+                      <th className="col-grade">Status / Grade</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {subjects.map((item, idx) => {
-                      const gradeDisplay = convertToNumberGrade(item.final);
-                      const isFailing = gradeDisplay === "5.00";
-
-                      return (
-                        <tr key={`${item.code}-${idx}`}>
-                          <td className="code-cell"><strong>{item.code}</strong></td>
-                          <td className="title-cell" title={item.title}>
-                            {item.title}
-                          </td>
-                          <td className="num">{item.units}</td>
-                          <td
-                            className={`grade ${
-                              gradeDisplay === "--" ? "red-dash" : "numeric-grade"
-                            }`}
-                            style={
-                              isFailing ? { color: "#dc2626", fontWeight: "700" } : {}
-                            }
-                          >
-                            {gradeDisplay}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {creditedSubjects.map((item, idx) => (
+                      <tr key={`cred-${item.code}-${idx}`}>
+                        <td className="code-cell">
+                          <strong>{item.code}</strong>
+                        </td>
+                        <td className="title-cell" title={item.title}>
+                          {item.title}
+                        </td>
+                        <td className="num">{item.units}</td>
+                        <td className="grade credited-grade-text">
+                          <span className="credited-pill">Credited</span>
+                        </td>
+                      </tr>
+                    ))}
 
                     <tr className="totals-row">
                       <td colSpan={2} className="totals-label"></td>
-                      <td className="num totals-val">{totalUnits}</td>
+                      <td className="num totals-val">{totalCreditedUnits}</td>
                       <td></td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              {/* MOBILE CARDS VIEW */}
               <div className="mobile-cards-container mobile-only">
-                {subjects.map((item, idx) => {
-                  const gradeDisplay = convertToNumberGrade(item.final);
-                  return (
-                    <div className="audit-card" key={`mob-a-${item.code}-${idx}`}>
-                      <div className="audit-card-top">
-                        <span className="code-cell"><strong>{item.code}</strong></span>
-                        <span className="audit-grade-pill">{gradeDisplay}</span>
-                      </div>
-                      <div className="audit-card-title">{item.title}</div>
-                      <div className="audit-card-units">{item.units} Units</div>
+                {creditedSubjects.map((item, idx) => (
+                  <div className="audit-card" key={`mob-cred-${item.code}-${idx}`}>
+                    <div className="audit-card-top">
+                      <span className="code-cell">
+                        <strong>{item.code}</strong>
+                      </span>
+                      <span className="audit-grade-pill credited">Credited</span>
                     </div>
-                  );
-                })}
+                    <div className="audit-card-title">{item.title}</div>
+                    <div className="audit-card-units">{item.units} Units</div>
+                  </div>
+                ))}
                 <div className="audit-mobile-totals">
-                  <span>Total Semester Units:</span>
-                  <strong>{totalUnits}</strong>
+                  <span>Total Credited Units:</span>
+                  <strong>{totalCreditedUnits}</strong>
                 </div>
               </div>
             </div>
-          );
-        })
+          )}
+
+          {termKeys.map((termLabel) => {
+            const subjects = semesterTerms[termLabel] || [];
+            const totalUnits = calculateUnits(subjects);
+
+            return (
+              <div className="curriculum-year-group reveal-on-scroll" key={termLabel}>
+                <div className="school-year-banner">{termLabel}</div>
+
+                <div className="curriculum-table-wrapper desktop-only">
+                  <table className="curriculum-table">
+                    <thead>
+                      <tr>
+                        <th className="col-code">Subject Code</th>
+                        <th className="col-title">Subject Description</th>
+                        <th className="col-num">No. of Units</th>
+                        <th className="col-grade">Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {subjects.map((item, idx) => {
+                        const gradeDisplay = convertToNumberGrade(item);
+                        const isFailing = gradeDisplay === "5.00";
+
+                        return (
+                          <tr key={`${item.code}-${idx}`}>
+                            <td className="code-cell"><strong>{item.code}</strong></td>
+                            <td className="title-cell" title={item.title}>
+                              {item.title}
+                            </td>
+                            <td className="num">{item.units}</td>
+                            <td
+                              className={`grade ${
+                                gradeDisplay === "--" ? "red-dash" : "numeric-grade"
+                              }`}
+                              style={
+                                isFailing ? { color: "#dc2626", fontWeight: "700" } : {}
+                              }
+                            >
+                              {gradeDisplay}
+                            </td>
+                          </tr>
+                        );
+                      })}
+
+                      <tr className="totals-row">
+                        <td colSpan={2} className="totals-label">Total Semester Units:</td>
+                        <td className="num totals-val">{totalUnits}</td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="mobile-cards-container mobile-only">
+                  {subjects.map((item, idx) => {
+                    const gradeDisplay = convertToNumberGrade(item);
+                    return (
+                      <div className="audit-card" key={`mob-a-${item.code}-${idx}`}>
+                        <div className="audit-card-top">
+                          <span className="code-cell"><strong>{item.code}</strong></span>
+                          <span className="audit-grade-pill">{gradeDisplay}</span>
+                        </div>
+                        <div className="audit-card-title">{item.title}</div>
+                        <div className="audit-card-units">{item.units} Units</div>
+                      </div>
+                    );
+                  })}
+                  <div className="audit-mobile-totals">
+                    <span>Total Semester Units:</span>
+                    <strong>{totalUnits}</strong>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </>
       ) : (
         <div className="audit-empty-state reveal-on-scroll">
-          No graded subjects recorded yet in your student profile history.
+          No graded or credited subjects recorded yet in your student profile history.
         </div>
       )}
     </main>
