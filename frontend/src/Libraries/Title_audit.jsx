@@ -213,7 +213,7 @@ export default function Title_audit() {
                   </div>
                 ))}
                 <div className="audit-mobile-totals">
-                  <span>Total Credited Units:</span>
+
                   <strong>{totalCreditedUnits}</strong>
                 </div>
               </div>
@@ -265,7 +265,7 @@ export default function Title_audit() {
                       })}
 
                       <tr className="totals-row">
-                        <td colSpan={2} className="totals-label">Total Semester Units:</td>
+                        <td colSpan={2} className="totals-label"></td>
                         <td className="num totals-val">{totalUnits}</td>
                         <td></td>
                       </tr>
