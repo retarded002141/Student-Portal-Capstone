@@ -616,7 +616,9 @@ export default function Records_request() {
                 <div className="records-card-header">
                   <div className="records-card-title-group">
                     <span className="records-card-doc">{item.documentType}</span>
-                    <span className="records-card-date">{item.dateRequested}</span>
+                    <span className="records-card-date">
+                      <span className="date-label">Date Requested:</span> {item.dateRequested}
+                    </span>
                   </div>
                   <span className={`records-status-badge ${item.status ? item.status.toLowerCase().replace(/\s+/g, '-') : 'pending'}`}>
                     {item.status || "Pending"}
