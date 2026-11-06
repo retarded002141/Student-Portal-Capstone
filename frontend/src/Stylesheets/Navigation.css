@@ -859,9 +859,6 @@
   border-left: 3.5px solid #d97706; /* Amber accent bar */
 }
 
-.notif-item.eval-reminder:hover {
-  background-color: #fef08a; /* Warm yellow on hover */
-}
 
 .notif-item.eval-reminder .notif-status-dot {
   background-color: #d97706;
