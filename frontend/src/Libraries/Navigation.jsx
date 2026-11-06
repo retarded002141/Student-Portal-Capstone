@@ -12,7 +12,6 @@ const formatRelativeTime = (createdAt, fallbackTime) => {
   if (!createdAt) return fallbackTime || "Just now";
 
   try {
-    // Append 'Z' if missing so JS parses it as UTC instead of local time
     const isoString = (typeof createdAt === 'string' && !createdAt.endsWith('Z') && !createdAt.includes('+'))
       ? `${createdAt}Z`
       : createdAt;
@@ -304,12 +303,6 @@ function Navigation() {
 
     setIsNotifOpen(false);
 
-    if (notif.isExternalEval && notif.externalUrl) {
-      window.open(notif.externalUrl, "_blank", "noopener,noreferrer");
-      return;
-    }
-
-    let targetRoute = notif.link || "/Records_request";
     const notifId = String(notif.id);
 
     setNotifications((prev) =>
@@ -328,6 +321,12 @@ function Navigation() {
       }
     }
 
+    if (notif.isExternalEval && notif.externalUrl) {
+      window.open(notif.externalUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    let targetRoute = notif.link || "/Records_request";
     navigate(targetRoute);
   };
 
@@ -460,7 +459,7 @@ function Navigation() {
               notifications.map((n) => (
                 <div 
                   key={n.id} 
-                  className={`notif-item ${n.read ? "read" : "unread"}`}
+                  className={`notif-item ${n.read ? "read" : "unread"} ${n.isExternalEval ? "eval-reminder" : ""}`}
                   onClick={(e) => handleNotificationClick(n, e)}
                   style={{ cursor: "pointer" }}
                 >

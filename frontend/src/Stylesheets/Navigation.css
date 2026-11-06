@@ -851,6 +851,36 @@
   margin-left: 8px;
 }
 
+/* =======================================================
+   FACULTY EVALUATION REMINDER HIGHLIGHT STYLING
+======================================================= */
+.notif-item.eval-reminder {
+  background-color: #fefce8; /* Soft yellow background */
+  border-left: 3.5px solid #d97706; /* Amber accent bar */
+}
+
+.notif-item.eval-reminder:hover {
+  background-color: #fef08a; /* Warm yellow on hover */
+}
+
+.notif-item.eval-reminder .notif-status-dot {
+  background-color: #d97706;
+}
+
+.notif-item.eval-reminder .notif-item-title {
+  color: #92400e;
+  font-weight: 700;
+}
+
+.notif-item.eval-reminder .notif-item-msg {
+  color: #78350f;
+}
+
+.notif-item.eval-reminder .notif-item-meta,
+.notif-item.eval-reminder .notif-time {
+  color: #b45309;
+}
+
 @keyframes evalDotPulse {
   0% {
     transform: scale(0.95);

@@ -187,14 +187,13 @@ async def get_student_profile(authorization: str = Header(None)):
 
 
 # =======================================================
-# 1.1 ENROLLED TERMS (STUDENT ARCHIVE, ACTIVE & SCHEDULES FALLBACK)
+# 1.1 ENROLLED TERMS
 # =======================================================
 @router.get("/terms")
 async def get_student_enrolled_terms(authorization: str = Header(None)):
     student_num = get_student_number_from_token(authorization)
     terms_set = set()
 
-    # 1. Query historical terms from studentarchive collection
     archive_cursor = database["studentarchive"].find({
         "$or": [
             {"studentNumber": str(student_num)},
@@ -208,7 +207,6 @@ async def get_student_enrolled_terms(authorization: str = Header(None)):
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # 2. Query active term from students collection
     student = await students_collection.find_one({
         "$or": [
             {"studentNumber": str(student_num)},
@@ -223,7 +221,6 @@ async def get_student_enrolled_terms(authorization: str = Header(None)):
         if sy and sem:
             terms_set.add(format_term_label(sy, sem))
 
-    # 3. Query active schedule if terms_set is still empty
     if not terms_set and student:
         s_year = str(student.get("year", "1"))
         s_sec = str(student.get("section", "A")).replace("BSIT-", "").replace("BSIT", "").strip()
@@ -245,7 +242,6 @@ async def get_student_enrolled_terms(authorization: str = Header(None)):
             sched_sem = matched_sched.get("semester") or s_sem
             terms_set.add(format_term_label(sched_sy, sched_sem))
 
-    # 4. Fallback to grades collection
     if not terms_set:
         student_grades = await grades_collection.find({
             "$or": [{"student_id": str(student_num)}, {"student_id": int(student_num) if student_num.isdigit() else student_num}]
@@ -476,7 +472,7 @@ async def get_student_grades(authorization: str = Header(None)):
 
 
 # =======================================================
-# 4. RECORDS REQUESTS (STUDENT & ADMIN)
+# 4. RECORDS REQUESTS
 # =======================================================
 @router.get("/records")
 @router.get("/records/")
@@ -754,9 +750,10 @@ async def get_student_notifications(authorization: str = Header(None)):
     notifs = []
     async for doc in cursor:
         doc["_id"] = str(doc["_id"])
+        if "id" not in doc:
+            doc["id"] = doc["_id"]
         notifs.append(doc)
 
-    # Return empty list directly if no notifications exist for this student
     if len(notifs) == 0:
         return {"notifications": []}
 
@@ -784,9 +781,45 @@ async def get_student_notifications(authorization: str = Header(None)):
             active_notifs.append(n)
 
     if expired_ids:
-        await studentsnotif_collection.delete_many({"id": {"$in": expired_ids}})
+        await studentsnotif_collection.delete_many({
+            "$or": [
+                {"id": {"$in": expired_ids}},
+                {"_id": {"$in": [ObjectId(eid) for eid in expired_ids if ObjectId.is_valid(eid)]}}
+            ]
+        })
 
     return {"notifications": active_notifs}
+
+
+@router.post("/notifications/read-all")
+async def mark_all_notifications_read(authorization: str = Header(None)):
+    student_num = get_student_number_from_token(authorization)
+    await studentsnotif_collection.update_many(
+        {"studentNumber": str(student_num)},
+        {"$set": {"read": True}}
+    )
+    return {"message": "All notifications marked as read."}
+
+
+@router.post("/notifications/read/{notif_id}")
+async def mark_single_notification_read(
+    notif_id: str,
+    authorization: str = Header(None)
+):
+    student_num = get_student_number_from_token(authorization)
+    
+    query_conditions = [{"id": notif_id}]
+    if ObjectId.is_valid(notif_id):
+        query_conditions.append({"_id": ObjectId(notif_id)})
+
+    await studentsnotif_collection.update_one(
+        {
+            "studentNumber": str(student_num),
+            "$or": query_conditions
+        },
+        {"$set": {"read": True}}
+    )
+    return {"message": "Notification marked as read."}
 
 
 # =======================================================
@@ -822,7 +855,7 @@ async def remove_avatar(authorization: str = Header(None)):
 
 
 # =======================================================
-# 7. SECURITY SETTINGS (PASSWORD & EMAIL)
+# 7. SECURITY SETTINGS
 # =======================================================
 pending_otps = {}
 
