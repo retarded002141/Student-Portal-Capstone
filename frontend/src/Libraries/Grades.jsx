@@ -261,9 +261,10 @@ export default function Grades() {
                     {r.final}
                   </td>
                   <td>
-                    <span className="prof-name">{r.prof}</span>
-                    <br />
-                    <span className="email">{r.email}</span>
+                    <div className="prof-info">
+                      <span className="prof-name">{r.prof}</span>
+                      <span className="email">{r.email}</span>
+                    </div>
                   </td>
                 </tr>
               ))

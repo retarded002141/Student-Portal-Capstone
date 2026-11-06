@@ -331,15 +331,10 @@ export default function Class_schedule() {
                 </td>
 
                 <td>
-                  <span className="prof-name">
-                    {subject.prof}
-                  </span>
-
-                  <br />
-
-                  <span className="email">
-                    {subject.email}
-                  </span>
+                  <div className="prof-info">
+                    <span className="prof-name">{subject.prof}</span>
+                    <span className="email">{subject.email}</span>
+                  </div>
                 </td>
 
               </tr>

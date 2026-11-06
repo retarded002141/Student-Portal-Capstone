@@ -148,7 +148,7 @@
 .schedule-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto;
+  table-layout: fixed; /* Fixed layout forces strict percentages */
 }
 
 .schedule-table thead {
@@ -156,7 +156,7 @@
 }
 
 .schedule-table th {
-  padding: 14px 16px;
+  padding: 14px 14px;
   text-align: left;
   font-size: 13.5px;
   font-weight: 700;
@@ -166,53 +166,55 @@
 }
 
 .schedule-table td {
-  padding: 14px 16px;
+  padding: 14px 14px;
   font-size: 14px;
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
-  vertical-align: middle;
+  vertical-align: top;
 }
 
 .schedule-table tr:last-child td {
   border-bottom: none;
 }
 
-/* Column width proportions */
+/* Explicit Proportional Column Widths */
 .schedule-table th:nth-child(1),
 .schedule-table td:nth-child(1) {
-  width: 35%;
+  width: 24%;
   white-space: normal;
   word-break: break-word;
 }
 
 .schedule-table th:nth-child(2),
 .schedule-table td:nth-child(2) {
-  width: 8%;
-  white-space: nowrap;
+  width: 6%;
   text-align: center;
+  white-space: nowrap;
 }
 
 .schedule-table th:nth-child(3),
 .schedule-table td:nth-child(3) {
   width: 12%;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .schedule-table th:nth-child(4),
 .schedule-table td:nth-child(4) {
-  width: 12%;
+  width: 10%;
   white-space: nowrap;
 }
 
 .schedule-table th:nth-child(5),
 .schedule-table td:nth-child(5) {
-  width: 18%;
-  white-space: nowrap;
+  width: 23%;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .schedule-table th:nth-child(6),
 .schedule-table td:nth-child(6) {
-  width: 15%;
+  width: 25%;
   white-space: normal;
   word-break: break-word;
 }
@@ -234,16 +236,23 @@
 .schedule-time {
   font-weight: 500;
   color: #1f2933;
+  line-height: 1.4;
 }
 
 .prof-name {
-  font-weight: 500;
+  font-weight: 600;
   color: #1f2933;
+  line-height: 1.35;
+  display: block;
 }
 
 .email {
   font-size: 12px;
   color: #6b7280;
+  display: block;
+  margin-top: 2px;
+  word-break: break-all; /* Forces long email addresses to wrap cleanly */
+  overflow-wrap: anywhere;
 }
 
 /* VISIBILITY UTILITIES */
