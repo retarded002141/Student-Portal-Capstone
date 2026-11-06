@@ -208,28 +208,30 @@
 .records-history-note { margin-top: 4px; margin-bottom: 14px; font-size: 14px; color: #4b5563; }
 
 /* =========================================
-   STANDARDIZED DESKTOP TABLE STYLING
+   AUTO-ADJUSTING DESKTOP TABLE STYLING
 ========================================= */
 
 .records-table-wrapper {
   background: #ffffff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .records-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .records-table thead { background-color: #e4f6e2; }
 
 .records-table th {
-  padding: 14px 28px;
+  padding: 14px 20px;
   text-align: left;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #1f2933;
   border-bottom: 1px solid #dcefd8;
@@ -237,14 +239,54 @@
 }
 
 .records-table td {
-  padding: 14px 28px;
+  padding: 14px 20px;
   font-size: 14px;
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
-  white-space: nowrap;
+  vertical-align: middle;
 }
 
 .records-table tr:last-child td { border-bottom: none; }
+
+/* Column width proportions */
+.records-table th:nth-child(1),
+.records-table td:nth-child(1) {
+  width: 30%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.records-table th:nth-child(2),
+.records-table td:nth-child(2) {
+  width: 18%;
+  white-space: nowrap;
+}
+
+.records-table th:nth-child(3),
+.records-table td:nth-child(3) {
+  width: 25%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.records-table th:nth-child(4),
+.records-table td:nth-child(4) {
+  width: 15%;
+  white-space: nowrap;
+}
+
+.records-table th:nth-child(5),
+.records-table td:nth-child(5) {
+  width: 10%;
+  white-space: nowrap;
+}
+
+.records-table th:nth-child(6),
+.records-table td:nth-child(6) {
+  width: 5%;
+  white-space: nowrap;
+  text-align: center;
+}
 
 .records-status-badge {
   display: inline-flex;
@@ -499,34 +541,6 @@
 .records-specify-input:focus {
   border-color: #2e522a;
   box-shadow: 0 0 0 3px rgba(46, 82, 42, 0.12);
-}
-
-/* =========================================
-   SIDEWAYS SCROLL INDICATOR / ANIMATED SCROLLBAR
-========================================= */
-
-.records-table-wrapper::-webkit-scrollbar {
-  height: 8px;
-}
-
-.records-table-wrapper::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 0 0 8px 8px;
-}
-
-.records-table-wrapper::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.records-table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #2e522a;
-}
-
-.records-table-wrapper {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
 }
 
 @keyframes fadeInDown {

@@ -122,21 +122,23 @@
 }
 
 /* =========================================
-   STANDARDIZED DESKTOP TABLE
+   AUTO-ADJUSTING DESKTOP TABLE
 ========================================= */
 
 .grades-table-wrapper {
   background: #ffffff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
-  overflow-x: auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
   margin-bottom: 80px;
-  -webkit-overflow-scrolling: touch;
 }
 
 .grades-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .grades-table thead {
@@ -144,9 +146,9 @@
 }
 
 .grades-table th {
-  padding: 14px 20px;
+  padding: 14px 16px;
   text-align: left;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #1f2933;
   border-bottom: 1px solid #dcefd8;
@@ -154,20 +156,49 @@
 }
 
 .grades-table td {
-  padding: 16px 20px;
-  font-size: 15px;
+  padding: 14px 16px;
+  font-size: 14px;
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
-  white-space: nowrap;
+  vertical-align: middle;
 }
 
 .grades-table tr:last-child td {
   border-bottom: none;
 }
 
-.grades-table .num { text-align: left; }
-.course-code { font-size: 12px; color: #b91c1c; font-weight: 600; }
-.course-title { font-weight: 500; }
+/* Column width proportions */
+.grades-table th:nth-child(1),
+.grades-table td:nth-child(1) {
+  width: 38%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.grades-table th:nth-child(2),
+.grades-table td:nth-child(2),
+.grades-table th:nth-child(3),
+.grades-table td:nth-child(3),
+.grades-table th:nth-child(4),
+.grades-table td:nth-child(4),
+.grades-table th:nth-child(5),
+.grades-table td:nth-child(5),
+.grades-table th:nth-child(6),
+.grades-table td:nth-child(6) {
+  width: 8%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.grades-table th:nth-child(7),
+.grades-table td:nth-child(7) {
+  width: 22%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.course-code { font-size: 12px; color: #b91c1c; font-weight: 600; display: inline-block; margin-bottom: 2px; }
+.course-title { font-weight: 500; color: #1f2933; line-height: 1.35; }
 .prof-name { font-weight: 500; color: #1f2933; }
 .email { font-size: 12px; color: #6b7280; }
 .final-grade-val.numeric-grade { color: #b91c1c; font-weight: 600; }
@@ -198,34 +229,6 @@
 
 .gwa-label { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
 .gwa-value { font-size: 22px; font-weight: 700; }
-
-/* =========================================
-   SIDEWAYS SCROLL INDICATOR / ANIMATED SCROLLBAR
-========================================= */
-
-.grades-table-wrapper::-webkit-scrollbar {
-  height: 8px;
-}
-
-.grades-table-wrapper::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 0 0 8px 8px;
-}
-
-.grades-table-wrapper::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.grades-table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #2e522a;
-}
-
-.grades-table-wrapper {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-}
 
 /* VISIBILITY UTILITIES */
 .desktop-only { display: block; }
